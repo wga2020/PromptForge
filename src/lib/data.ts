@@ -89,6 +89,140 @@ export const COLOR_PALETTES: Record<string, string[]> = {
 };
 
 // ============================================================
+// OBJECT CATEGORIES FOR DESIGN CUSTOMIZATION
+// 20 categories aligned with niches, each with 5+ objects
+// ============================================================
+export interface ObjectCategory {
+  name: string;
+  icon: string;
+  niche: string;
+  objects: string[];
+}
+
+export const OBJECT_CATEGORIES: ObjectCategory[] = [
+  {
+    name: "Música",
+    icon: "🎵",
+    niche: "Música",
+    objects: ["Guitarra", "Saxofón", "Timbal", "Maracas", "Teclado/Piano", "Trompeta", "Batería"]
+  },
+  {
+    name: "Médica",
+    icon: "🏥",
+    niche: "Profesiones",
+    objects: ["Estetoscopio", "Termómetro", "Jeringa", "Balanza", "Botiquín", "Corazón anatómico"]
+  },
+  {
+    name: "Deportes",
+    icon: "⚽",
+    niche: "Deportes",
+    objects: ["Bate de Béisbol", "Balón de Fútbol", "Balón de Basket", "Raqueta", "Casco", "Guante de Box"]
+  },
+  {
+    name: "Tecnología",
+    icon: "💻",
+    niche: "Ciencia/Tech",
+    objects: ["Circuito integrado", "Robot", "Doble Hélice ADN", "Átomo", "Teclado", "Chip"]
+  },
+  {
+    name: "Culinaria",
+    icon: "🍳",
+    niche: "Comida/Bebida",
+    objects: ["Taza de Café", "Sombrero de Chef", "Rebanada de Pizza", "Copa de Vino", "Cupcake", "Cuchillo de Chef"]
+  },
+  {
+    name: "Naturaleza",
+    icon: "🌿",
+    niche: "Naturaleza",
+    objects: ["Hoja", "Montaña", "Ola", "Árbol", "Flor", "Mariposa"]
+  },
+  {
+    name: "Viajes",
+    icon: "✈️",
+    niche: "Viajes",
+    objects: ["Avión", "Brújula", "Globo terráqueo", "Maleta", "Pasaporte", "Cámara de fotos"]
+  },
+  {
+    name: "Espiritualidad",
+    icon: "✝️",
+    niche: "Religión",
+    objects: ["Cruz", "Rosario", "Paloma", "Cáliz", "Vela", "Biblia"]
+  },
+  {
+    name: "Romance",
+    icon: "💕",
+    niche: "Amor/Romance",
+    objects: ["Corazón", "Rosa", "Anillo", "Flecha de Cupido", "Carta de amor", "Cupido"]
+  },
+  {
+    name: "Festivo",
+    icon: "🎉",
+    niche: "Fechas Especiales",
+    objects: ["Regalo", "Fuegos artificiales", "Globo", "Pastel", "Estrella", "Piñata"]
+  },
+  {
+    name: "Arte",
+    icon: "🎨",
+    niche: "Arte/Cultura",
+    objects: ["Pincel", "Máscaras de Teatro", "Escultura", "Caballete", "Violín", "Paleta de colores"]
+  },
+  {
+    name: "Ecológica",
+    icon: "♻️",
+    niche: "Eco/Sostenibilidad",
+    objects: ["Símbolo Reciclar", "Panel Solar", "Molino de Viento", "Brote/Semilla", "Gota de Agua", "Hoja Verde"]
+  },
+  {
+    name: "Moda",
+    icon: "👠",
+    niche: "Moda/Estilo",
+    objects: ["Taco Alto", "Gafas de Sol", "Bolso", "Corbata", "Diamante", "Corona"]
+  },
+  {
+    name: "Gaming",
+    icon: "🎮",
+    niche: "Gaming",
+    objects: ["Control/Mando", "Joystick", "Gafas VR", "Dado", "Espada Pixel", "Moneda"]
+  },
+  {
+    name: "Infantil",
+    icon: "🧸",
+    niche: "Infantil",
+    objects: ["Oso de Peluche", "Globo Animal", "Cohete de Juguete", "Bloques", "Chupete", "Tren de Juguete"]
+  },
+  {
+    name: "Humor",
+    icon: "😂",
+    niche: "Humor/Memes",
+    objects: ["Emoji Risueño", "Cojín de Broma", "Pato de Goma", "Varita Mágica", "Sombrero de Bufón", "Llama"]
+  },
+  {
+    name: "Literatura",
+    icon: "📚",
+    niche: "Literatura",
+    objects: ["Libro Abierto", "Pluma Estilográfica", "Gafas de Lectura", "Pergamino", "Tintero", "Lámpara de Lectura"]
+  },
+  {
+    name: "Superación",
+    icon: "🚀",
+    niche: "Motivacional",
+    objects: ["Mancuerna", "Cumbre de Montaña", "Trofeo", "Cohete", "Amanecer", "Fénix"]
+  },
+  {
+    name: "Hobbies",
+    icon: "🎯",
+    niche: "Hobbies",
+    objects: ["Cámara Fotográfica", "Telescopio", "Caña de Pescar", "Paleta de Pintor", "Pieza de Ajedrez", "Bicicleta"]
+  },
+  {
+    name: "Pop Culture",
+    icon: "🎬",
+    niche: "Pop Culture",
+    objects: ["Micrófono", "Claqueta", "Auriculares", "Disco de Vinilo", "Palomitas", "Estrella de Hollywood"]
+  },
+];
+
+// ============================================================
 // STYLE → FONT AESTHETIC MAPPING
 // Maps design styles to the font aesthetic descriptors from the master prompt
 // ============================================================
@@ -573,6 +707,7 @@ export function generatePromptText(data: {
   colorPalette: string[];
   paletteName: string;
   aiTool: string;
+  selectedObjects?: string[];
 }): string {
   const config = PRODUCT_PROMPT_CONFIG[data.product] || PRODUCT_PROMPT_CONFIG["T-Shirt"];
   const fontAesthetic = STYLE_FONT_AESTHETIC[data.style] || STYLE_FONT_AESTHETIC["Modern Bold"];
@@ -610,9 +745,17 @@ export function generatePromptText(data: {
   // Build the color palette section
   const colorSection = `Rich and vibrant color palette based on ${data.paletteName} (${colorStr}) with smooth gradients, depth and dimension`;
 
+  // Build the objects section
+  let objectsSection = "";
+  if (data.selectedObjects && data.selectedObjects.length > 0) {
+    const objectsList = data.selectedObjects.join(", ");
+    objectsSection = `Featuring detailed illustrations of: ${objectsList}. Each object rendered with precision, realistic proportions, and integrated harmoniously into the composition. `;
+  }
+
   // Assemble the full master prompt
   const prompt = [
     `Vector illustration with hyperrealistic detail, ${data.niche} theme featuring ${nicheTheme}.`,
+    objectsSection,
     illustrationApproach,
     `Bold clean vector outlines combined with photorealistic rendering, sharp shading, intricate textures, dramatic lighting with strong contrast.`,
     colorSection,

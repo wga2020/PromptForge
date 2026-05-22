@@ -24,7 +24,8 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useToast } from '@/hooks/use-toast';
 import {
   PRODUCTS, NICHES, DESIGN_STYLES, AI_TOOLS, COLOR_PALETTES,
-  PRODUCT_FONT_MAP, DEFAULT_FONTS, getFontsForProductNiche, generatePromptText
+  PRODUCT_FONT_MAP, DEFAULT_FONTS, getFontsForProductNiche, generatePromptText,
+  OBJECT_CATEGORIES
 } from '@/lib/data';
 
 // ============================================================
@@ -392,6 +393,7 @@ function PromptGeneratorView() {
   const [generating, setGenerating] = useState(false);
   const [aiGeneratedPrompt, setAiGeneratedPrompt] = useState('');
   const [projects, setProjects] = useState<ProjectData[]>([]);
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
 
   const [formData, setFormData] = useState({
     product: '',
@@ -406,6 +408,7 @@ function PromptGeneratorView() {
     fontSecondaryOverride: '',
     fontAccentOverride: '',
     projectId: '',
+    selectedObjects: [] as string[],
   });
 
   useEffect(() => {
@@ -445,6 +448,7 @@ function PromptGeneratorView() {
     colorPalette: palette,
     paletteName: formData.paletteName,
     aiTool: formData.aiTool,
+    selectedObjects: formData.selectedObjects,
   }) : '';
 
   const handleCopy = async (text: string) => {
@@ -519,7 +523,7 @@ function PromptGeneratorView() {
       product: '', niche: '', style: '', paletteName: '',
       primaryText: '', secondaryText: '', accentText: '',
       aiTool: 'Midjourney', fontFamilyOverride: '', fontSecondaryOverride: '',
-      fontAccentOverride: '', projectId: '',
+      fontAccentOverride: '', projectId: '', selectedObjects: [],
     });
     setAiGeneratedPrompt('');
   };
@@ -648,6 +652,113 @@ function PromptGeneratorView() {
                     </button>
                   ))}
                 </div>
+              </div>
+
+              {/* Object Selection */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm font-medium">Design Objects</Label>
+                  {formData.selectedObjects.length > 0 && (
+                    <Badge variant="secondary" className="text-xs">
+                      {formData.selectedObjects.length} selected
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-xs text-gray-400">Select objects to feature in your design. Your niche category appears first.</p>
+                <div className="space-y-3">
+                  {(() => {
+                    const sortedCategories = formData.niche
+                      ? [
+                          ...OBJECT_CATEGORIES.filter(cat => cat.niche === formData.niche),
+                          ...OBJECT_CATEGORIES.filter(cat => cat.niche !== formData.niche),
+                        ]
+                      : OBJECT_CATEGORIES;
+                    return sortedCategories.map((category, idx) => {
+                      const isPrimary = !!(formData.niche && category.niche === formData.niche);
+                      const isExpanded = expandedCategories.has(category.name) || isPrimary || idx < 3;
+                      return (
+                        <div key={category.name} className={`border rounded-lg p-3 ${isPrimary ? 'border-emerald-300 bg-emerald-50/50' : 'bg-gray-50/50'}`}>
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <span className="text-base">{category.icon}</span>
+                              <span className="text-sm font-semibold text-gray-700">{category.name}</span>
+                              {isPrimary && (
+                                <Badge className="text-[9px] bg-emerald-100 text-emerald-700 border-emerald-200">Recommended</Badge>
+                              )}
+                            </div>
+                            <button
+                              onClick={() => {
+                                setExpandedCategories(prev => {
+                                  const next = new Set(prev);
+                                  if (next.has(category.name)) next.delete(category.name);
+                                  else next.add(category.name);
+                                  return next;
+                                });
+                              }}
+                              className="text-xs text-gray-400 hover:text-emerald-500"
+                            >
+                              {isExpanded ? '− Collapse' : '+ Expand'}
+                            </button>
+                          </div>
+                          {isExpanded && (
+                            <div className="flex flex-wrap gap-2">
+                              {category.objects.map(obj => {
+                                const isSelected = formData.selectedObjects.includes(obj);
+                                return (
+                                  <button
+                                    key={obj}
+                                    onClick={() => {
+                                      setFormData(prev => ({
+                                        ...prev,
+                                        selectedObjects: isSelected
+                                          ? prev.selectedObjects.filter(o => o !== obj)
+                                          : [...prev.selectedObjects, obj]
+                                      }));
+                                    }}
+                                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
+                                      isSelected
+                                        ? 'bg-emerald-500 text-white border-emerald-500 shadow-sm'
+                                        : 'bg-white text-gray-600 border-gray-200 hover:border-emerald-300 hover:bg-emerald-50'
+                                    }`}
+                                  >
+                                    {obj}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    });
+                  })()}
+                </div>
+                {formData.selectedObjects.length > 0 && (
+                  <div className="flex items-center gap-2 pt-1">
+                    <span className="text-xs text-gray-500">Selected:</span>
+                    <div className="flex flex-wrap gap-1">
+                      {formData.selectedObjects.map(obj => (
+                        <Badge key={obj} variant="outline" className="text-[10px] bg-emerald-50 text-emerald-700 border-emerald-200">
+                          {obj}
+                          <button
+                            onClick={() => setFormData(prev => ({
+                              ...prev,
+                              selectedObjects: prev.selectedObjects.filter(o => o !== obj)
+                            }))}
+                            className="ml-1 hover:text-red-500"
+                          >
+                            ×
+                          </button>
+                        </Badge>
+                      ))}
+                    </div>
+                    <button
+                      onClick={() => setFormData(prev => ({ ...prev, selectedObjects: [] }))}
+                      className="text-[10px] text-red-400 hover:text-red-600 ml-1"
+                    >
+                      Clear all
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* Text Inputs */}
@@ -782,6 +893,12 @@ function PromptGeneratorView() {
                     <span className="flex gap-0.5 ml-1">
                       {palette.map((c, i) => <span key={i} className="w-3 h-3 rounded-full inline-block" style={{ backgroundColor: c }} />)}
                     </span>
+                  </Badge>
+                )}
+                {formData.selectedObjects.length > 0 && (
+                  <Badge className="bg-cyan-100 text-cyan-700 flex items-center gap-1">
+                    {formData.selectedObjects.length} object{formData.selectedObjects.length > 1 ? 's' : ''}
+                    <span className="text-[10px] ml-1">({formData.selectedObjects.slice(0, 3).join(', ')}{formData.selectedObjects.length > 3 ? '...' : ''})</span>
                   </Badge>
                 )}
               </div>
