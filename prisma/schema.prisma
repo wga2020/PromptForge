@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Project {
+  id          String    @id @default(cuid())
+  name        String
+  description String    @default("")
+  niche       String    @default("")
+  color       String    @default("#6366f1")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  prompts     Prompt[]
+  sessions    Session[]
+}
+
+model Session {
+  id          String    @id @default(cuid())
+  name        String
+  projectId   String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  prompts     Prompt[]
+}
+
+model Prompt {
+  id            String    @id @default(cuid())
+  title         String
+  content       String
+  product       String
+  niche         String
+  theme         String    @default("")
+  fontFamily    String    @default("")
+  fontAccent    String    @default("")
+  fontSecondary String    @default("")
+  colorPalette  String    @default("[]")
+  style         String    @default("")
+  aiTool        String    @default("midjourney")
+  isFavorite    Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  projectId     String?
+  sessionId     String?
+  project       Project?  @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  session       Session?  @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+}
+
+model CalendarEvent {
+  id          String   @id @default(cuid())
+  name        String
+  date        String
+  type        String   @default("special")
+  niche       String   @default("general")
+  description String   @default("")
+  country     String   @default("global")
+  year        Int      @default(2026)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
