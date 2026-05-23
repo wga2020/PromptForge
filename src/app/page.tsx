@@ -5,7 +5,7 @@ import {
   LayoutDashboard, Wand2, FolderKanban, Calendar, BookOpen,
   Plus, Trash2, Edit3, Copy, Heart, Star, ChevronRight,
   Search, Download, RefreshCw, Sparkles,
-  Menu, ArrowRight, ArrowLeft, Files
+  Menu, ArrowRight, ArrowLeft, Files, MessageSquareText
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -31,7 +31,7 @@ import {
 // ============================================================
 // TYPES
 // ============================================================
-type Tab = 'dashboard' | 'generator' | 'projects' | 'calendar' | 'prompts';
+type Tab = 'dashboard' | 'generator' | 'puns' | 'projects' | 'calendar' | 'prompts';
 
 interface ProjectData {
   id: string; name: string; description: string; niche: string; color: string;
@@ -76,6 +76,7 @@ export default function App() {
   const navItems: { id: Tab; label: string; icon: React.ReactNode }[] = [
     { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="h-5 w-5" /> },
     { id: 'generator', label: 'Prompt Generator', icon: <Wand2 className="h-5 w-5" /> },
+    { id: 'puns', label: 'PUNS', icon: <MessageSquareText className="h-5 w-5" /> },
     { id: 'projects', label: 'Projects', icon: <FolderKanban className="h-5 w-5" /> },
     { id: 'calendar', label: 'Calendar', icon: <Calendar className="h-5 w-5" /> },
     { id: 'prompts', label: 'My Prompts', icon: <BookOpen className="h-5 w-5" /> },
@@ -193,6 +194,7 @@ export default function App() {
           <main className="flex-1 overflow-y-auto pb-20 md:pb-0">
             {activeTab === 'dashboard' && <DashboardView onNavigate={setActiveTab} />}
             {activeTab === 'generator' && <PromptGeneratorView />}
+            {activeTab === 'puns' && <PunsGeneratorView onNavigate={setActiveTab} />}
             {activeTab === 'projects' && <ProjectsView />}
             {activeTab === 'calendar' && <CalendarView />}
             {activeTab === 'prompts' && <MyPromptsView />}
@@ -977,6 +979,311 @@ function PromptGeneratorView() {
           </div>
         </CardContent>
       </Card>
+    </div>
+  );
+}
+
+// ============================================================
+// PUNS GENERATOR VIEW
+// ============================================================
+interface PunCategory {
+  icon: string;
+  name: string;
+  productKey: string;
+  description: string;
+  items: string[];
+}
+
+const PUN_LANGUAGES = [
+  { code: "English", flag: "🇺🇸" },
+  { code: "Spanish", flag: "🇪🇸" },
+  { code: "Portuguese", flag: "🇧🇷" },
+  { code: "French", flag: "🇫🇷" },
+  { code: "German", flag: "🇩🇪" },
+  { code: "Italian", flag: "🇮🇹" },
+];
+
+const PUN_CATEGORIES_META = [
+  { icon: "👕", name: "T-Shirts", productKey: "T-Shirt", description: "Frases llamativas, de identidad, humorísticas o de orgullo", count: 3 },
+  { icon: "🧥", name: "Hoodies", productKey: "Hoodie", description: "Frases acogedoras, de mentalidad, estilo confort", count: 3 },
+  { icon: "☕", name: "Mugs", productKey: "Mug/Taza", description: "Rutina matutina, oficina, café/té, cansancio", count: 3 },
+  { icon: "🛍️", name: "Tote Bags", productKey: "Tote Bag", description: "Compras, ecología, estilo relajado", count: 3 },
+  { icon: "🏷️", name: "Stickers", productKey: "Sticker", description: "Frases muy cortas, visuales, directas", count: 3 },
+  { icon: "🧢", name: "Cap/Gorra", productKey: "Cap/Gorra", description: "Ultra cortas, de actitud, deportes, sol", count: 2 },
+  { icon: "🛋️", name: "Cushion/Cojín", productKey: "Cushion/Cojín", description: "Hogar, descanso, pereza, decoración", count: 2 },
+  { icon: "🛌", name: "Blanket/Manta", productKey: "Blanket/Manta", description: "Dormir, invierno, series, flojera extrema", count: 2 },
+  { icon: "🖱️", name: "MousePad", productKey: "Mousepad", description: "Oficina, gaming, productividad, estrés", count: 2 },
+];
+
+function PunsGeneratorView({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
+  const { toast } = useToast();
+  const [language, setLanguage] = useState('English');
+  const [niche, setNiche] = useState('');
+  const [customNiche, setCustomNiche] = useState('');
+  const [generating, setGenerating] = useState(false);
+  const [punResults, setPunResults] = useState<PunCategory[]>([]);
+  const [error, setError] = useState('');
+
+  const handleGenerate = async () => {
+    const effectiveNiche = customNiche || niche;
+    if (!effectiveNiche) {
+      toast({ title: 'Select a niche', description: 'Please select or type a niche/theme for your puns', variant: 'destructive' });
+      return;
+    }
+
+    setGenerating(true);
+    setError('');
+    setPunResults([]);
+
+    try {
+      const res = await fetch('/api/puns', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ language: language, niche: effectiveNiche }),
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to generate puns');
+      }
+
+      const data = await res.json();
+      if (data.puns && Array.isArray(data.puns)) {
+        setPunResults(data.puns);
+        toast({ title: 'Puns Generated!', description: `25 puns for "${effectiveNiche}" in ${language}` });
+      } else {
+        setError('Unexpected response format. Please try again.');
+      }
+    } catch (err) {
+      setError('Failed to generate puns. Please try again.');
+      toast({ title: 'Error', description: 'Failed to generate puns', variant: 'destructive' });
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  const handleCopyPun = async (text: string) => {
+    await navigator.clipboard.writeText(text);
+    toast({ title: 'Copied!', description: 'Pun copied to clipboard' });
+  };
+
+  const handleCopyAll = async () => {
+    const allText = punResults.map(cat =>
+      `${cat.icon} ${cat.name}\n${cat.items.map((item, i) => `${i + 1}. ${item}`).join('\n')}`
+    ).join('\n\n');
+    await navigator.clipboard.writeText(allText);
+    toast({ title: 'All Copied!', description: 'All puns copied to clipboard' });
+  };
+
+  const effectiveNiche = customNiche || niche;
+
+  return (
+    <div className="p-4 md:p-6 space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+            <MessageSquareText className="h-7 w-7 text-emerald-500" />
+            PUNS Generator
+          </h2>
+          <p className="text-sm text-gray-500 mt-1">Juegos de palabras creativos y comerciales para POD</p>
+        </div>
+        {punResults.length > 0 && (
+          <Button onClick={handleCopyAll} variant="outline" className="gap-2">
+            <Copy className="h-4 w-4" /> Copy All
+          </Button>
+        )}
+      </div>
+
+      {/* What is a PUN? - Info Card */}
+      <Card className="border-emerald-200 bg-gradient-to-r from-emerald-50 to-teal-50">
+        <CardContent className="p-5">
+          <h3 className="text-sm font-bold text-emerald-800 mb-2">What is a PUN? - What is a Pun?</h3>
+          <p className="text-xs text-emerald-700 leading-relaxed">
+            A <strong>pun</strong> is a clever wordplay that uses words with similar sounds (homophones) or multiple meanings (polysemy)
+            to create a fun double meaning. In POD, puns are the king of sales because they are short, witty, and create an instant
+            connection with the customer. Examples: <em>&quot;Brew-tiful&quot;</em> (Beautiful), <em>&quot;Espresso Yourself&quot;</em> (Express Yourself),
+            <em>&quot;Java the Hutt&quot;</em> (Jabba the Hutt).
+          </p>
+        </CardContent>
+      </Card>
+
+      {/* Selection Panel */}
+      <Card>
+        <CardContent className="p-6 space-y-6">
+          {/* Language Selection */}
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">1. Language for Puns</Label>
+            <p className="text-xs text-gray-400">Select the language for your wordplay</p>
+            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+              {PUN_LANGUAGES.map(lang => (
+                <button
+                  key={lang.code}
+                  onClick={() => setLanguage(lang.code)}
+                  className={`p-3 rounded-lg border-2 text-center transition-all ${
+                    language === lang.code
+                      ? 'border-emerald-500 bg-emerald-50 shadow-sm'
+                      : 'border-gray-200 hover:border-emerald-300'
+                  }`}
+                >
+                  <span className="text-xl block">{lang.flag}</span>
+                  <span className="text-xs font-medium text-gray-700 block mt-1">{lang.code}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Niche Selection */}
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">2. Niche / Theme for Puns</Label>
+            <p className="text-xs text-gray-400">Select a niche or type a custom theme</p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-2">
+              {NICHES.map(n => (
+                <button
+                  key={n}
+                  onClick={() => { setNiche(n); setCustomNiche(''); }}
+                  className={`p-2.5 rounded-lg border-2 text-xs font-medium transition-all ${
+                    niche === n && !customNiche
+                      ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
+                      : 'border-gray-200 hover:border-emerald-300 text-gray-600'
+                  }`}
+                >
+                  {n}
+                </button>
+              ))}
+            </div>
+            <div className="flex gap-2 mt-2">
+              <Input
+                placeholder="Or type a custom theme... (e.g., Coffee, Nursing, Cats, Gym)"
+                value={customNiche}
+                onChange={e => { setCustomNiche(e.target.value); setNiche(''); }}
+                className="flex-1"
+              />
+            </div>
+          </div>
+
+          {/* Generate Button */}
+          <div className="flex items-center gap-3">
+            <Button
+              onClick={handleGenerate}
+              disabled={generating || !effectiveNiche}
+              className="bg-emerald-500 hover:bg-emerald-600 text-white px-8"
+            >
+              {generating ? (
+                <>
+                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                  Generating Puns...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  Generate 25 Puns
+                </>
+              )}
+            </Button>
+            {effectiveNiche && (
+              <span className="text-sm text-gray-500">
+                for <strong className="text-gray-700">{effectiveNiche}</strong> in <strong className="text-gray-700">{language}</strong>
+              </span>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Error Message */}
+      {error && (
+        <Card className="border-red-200 bg-red-50">
+          <CardContent className="p-4">
+            <p className="text-sm text-red-600">{error}</p>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Loading State */}
+      {generating && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {PUN_CATEGORIES_META.map((cat, i) => (
+            <Card key={i} className="animate-pulse">
+              <CardHeader className="p-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">{cat.icon}</span>
+                  <div className="h-5 bg-gray-200 rounded w-28" />
+                </div>
+              </CardHeader>
+              <CardContent className="p-4 pt-0 space-y-2">
+                {[...Array(cat.count)].map((_, j) => (
+                  <div key={j} className="h-4 bg-gray-100 rounded" />
+                ))}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {/* Results */}
+      {!generating && punResults.length > 0 && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-gray-900">
+              Results: 25 Puns for &quot;{effectiveNiche}&quot; in {language}
+            </h3>
+            <Badge variant="secondary" className="text-xs">
+              {punResults.reduce((sum, cat) => sum + cat.items.length, 0)} puns
+            </Badge>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {punResults.map((category, idx) => (
+              <Card key={idx} className="hover:shadow-md transition-shadow">
+                <CardHeader className="p-4 pb-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl">{category.icon}</span>
+                      <CardTitle className="text-sm font-bold text-gray-800">{category.name}</CardTitle>
+                    </div>
+                    <Badge variant="outline" className="text-[10px]">{category.items.length}</Badge>
+                  </div>
+                  <p className="text-[11px] text-gray-400 mt-1">{category.description}</p>
+                </CardHeader>
+                <CardContent className="p-4 pt-1">
+                  <div className="space-y-1.5">
+                    {category.items.map((pun, punIdx) => (
+                      <div
+                        key={punIdx}
+                        className="group flex items-center gap-2 p-2 rounded-lg hover:bg-emerald-50 transition-colors cursor-pointer"
+                        onClick={() => handleCopyPun(pun)}
+                      >
+                        <span className="text-xs font-bold text-emerald-500 w-5">{punIdx + 1}.</span>
+                        <span className="text-sm text-gray-700 flex-1">{pun}</span>
+                        <Copy className="h-3.5 w-3.5 text-gray-300 group-hover:text-emerald-500 transition-colors opacity-0 group-hover:opacity-100" />
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Save as Prompts CTA */}
+          <Card className="border-dashed border-2 border-emerald-300 bg-emerald-50/50">
+            <CardContent className="p-5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-sm font-semibold text-emerald-800">Use these puns in your designs</h4>
+                  <p className="text-xs text-emerald-600 mt-1">Go to the Prompt Generator and use these puns as your Primary Text to create stunning designs</p>
+                </div>
+                <Button
+                  onClick={() => {
+                    onNavigate('generator');
+                  }}
+                  className="bg-emerald-500 hover:bg-emerald-600 text-white"
+                >
+                  <Wand2 className="h-4 w-4 mr-2" /> Go to Generator
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }
