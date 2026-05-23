@@ -26,6 +26,7 @@ export const PRODUCTS: ProductInfo[] = [
   { name: "Pin/Badge", icon: "📌", description: "Pin/Lepismo", printArea: "compact circular design, bold simple shapes", resolution: "1000x1000px" },
   { name: "Card/Invitación", icon: "💌", description: "Tarjeta/Invitación", printArea: "portrait layout design, elegant presentation", resolution: "2400x3600px" },
   { name: "Mousepad", icon: "🖱️", description: "Alfombrilla de ratón", printArea: "full surface design, desk accessory aesthetic", resolution: "3600x2700px" },
+  { name: "Cover Ebook", icon: "📖", description: "Portada de Ebook", printArea: "full front cover design, portrait layout, thumbnail-optimized", resolution: "2500x4000px" },
 ];
 
 export const NICHES = [
@@ -385,6 +386,14 @@ export const PRODUCT_PROMPT_CONFIG: Record<string, {
     qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 3600x2700px, 300 DPI, print-ready for sublimation on fabric-top rubber-base mousepad",
     chromaColor: "full bleed background",
   },
+  "Cover Ebook": {
+    productContext: "Ebook cover design, bestselling book cover aesthetic, visually stunning and captivating at thumbnail size, professional publishing quality",
+    backgroundSpec: "full cover design with immersive atmospheric background, cinematic depth of field, dramatic lighting and mood that captures the book's essence, rich layered environment that draws the viewer in, no isolation needed as this is a complete book cover artwork",
+    compositionSpec: "Portrait composition with clear visual hierarchy optimized for thumbnail visibility on Amazon Kindle, Apple Books and Kobo, title positioned in the upper third for maximum impact, author name in the lower third, focal point imagery in the center drawing the eye, strong contrast between text and background for legibility at small sizes",
+    typographySpec: "Bestselling book cover typography with bold captivating title in ENGLISH as the primary visual anchor, rendered in a style that conveys the genre and tone of the book, author name in clean complementary font at the bottom, tagline or subtitle in smaller supporting text, all text perfectly legible at thumbnail size (120px wide), with dramatic text effects such as emboss, glow, shadow or metallic finish to enhance visual impact and create a premium feel",
+    qualityMarkers: "Ultra detailed, 4K, professional book cover design, trending on Behance and BookCoverArchive, 2500x4000px, 300 DPI, Amazon KDP compliant, print-ready for paperback and hardcover wrap, optimized for digital storefront thumbnail display, award-winning book cover aesthetic",
+    chromaColor: "full cinematic background",
+  },
 };
 
 // ============================================================
@@ -642,6 +651,28 @@ export const PRODUCT_FONT_MAP: Record<string, Record<string, { principal: string
   "Pin/Badge": { principal: "Futura Bold", secundaria: "Montserrat Black", acento: "Bebas Neue" } as any,
   "Card/Invitación": { principal: "Great Vibes", secundaria: "Cormorant Garamond", acento: "Allura" } as any,
   "Mousepad": { principal: "Orbitron", secundaria: "Exo 2", acento: "Audiowide" } as any,
+  "Cover Ebook": {
+    "Motivacional": { principal: "Bebas Neue", secundaria: "Montserrat Light", acento: "Great Vibes" },
+    "Profesiones": { principal: "Cinzel", secundaria: "Cormorant Garamond", acento: "Satisfy" },
+    "Hobbies": { principal: "Playfair Display Bold", secundaria: "Lora", acento: "Great Vibes" },
+    "Religión": { principal: "Cinzel Decorative", secundaria: "Cormorant Garamond", acento: "Great Vibes" },
+    "Pop Culture": { principal: "Bangers", secundaria: "Anton", acento: "Gugi" },
+    "Fechas Especiales": { principal: "Mountains of Christmas", secundaria: "Crimson Text", acento: "Great Vibes" },
+    "Amor/Romance": { principal: "Great Vibes", secundaria: "Playfair Display", acento: "Sacramento" },
+    "Naturaleza": { principal: "Playfair Display Bold", secundaria: "Cormorant Garamond", acento: "Caveat" },
+    "Ciencia/Tech": { principal: "Orbitron", secundaria: "Exo 2", acento: "Audiowide" },
+    "Deportes": { principal: "Bebas Neue", secundaria: "Oswald", acento: "Anton" },
+    "Comida/Bebida": { principal: "Playfair Display Bold", secundaria: "Lora", acento: "Lobster" },
+    "Viajes": { principal: "Rye", secundaria: "Playfair Display", acento: "Satisfy" },
+    "Arte/Cultura": { principal: "Didot", secundaria: "Garamond", acento: "Cormorant Garamond" },
+    "Eco/Sostenibilidad": { principal: "Playfair Display Bold", secundaria: "Lora Italic", acento: "Caveat" },
+    "Moda/Estilo": { principal: "Didot", secundaria: "Futura", acento: "Sacramento" },
+    "Gaming": { principal: "Press Start 2P", secundaria: "Orbitron", acento: "Bungee Shade" },
+    "Música": { principal: "Permanent Marker", secundaria: "Bebas Neue", acento: "Rock Salt" },
+    "Infantil": { principal: "Fredoka One", secundaria: "Nunito Bold", acento: "Gochi Hand" },
+    "Humor/Memes": { principal: "Bangers", secundaria: "Impact", acento: "Comic Neue Bold" },
+    "Literatura": { principal: "Cormorant Garamond", secundaria: "EB Garamond", acento: "Allura" },
+  },
 };
 
 // Fill in remaining products with all niches using the T-Shirt fallback
