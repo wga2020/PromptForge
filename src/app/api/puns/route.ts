@@ -1,16 +1,76 @@
 import ZAI from 'z-ai-web-dev-sdk';
 import { NextRequest, NextResponse } from 'next/server';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { PUNS_MASTER_PROMPT } from '@/lib/data';
 
 export async function POST(req: NextRequest) {
   try {
-    const { language, niche } = await req.json();
+    const { aiEngine, language, niche, selectedProducts } = await req.json();
 
-    if (!language || !niche) {
+    if (!language || !niche || !selectedProducts || !Array.isArray(selectedProducts) || selectedProducts.length === 0) {
       return NextResponse.json(
-        { error: 'Language and niche are required' },
+        { error: 'Language, niche and selectedProducts are required' },
         { status: 400 }
       );
+    }
+
+    const productInstructions = selectedProducts.map((p: any, i: number) => `${i + 1}. ${p.name} (25 puns) - ${p.description}`).join('\n');
+    const jsonStructure = selectedProducts.map((p: any) => `  {
+    "icon": "${p.icon}",
+    "name": "${p.name}",
+    "productKey": "${p.productKey}",
+    "description": "${p.description}",
+    "items": ["pun 1", "pun 2", "pun 3", "...", "pun 25"]
+  }`).join(',\n');
+
+    const promptBase = PUNS_MASTER_PROMPT.split('Distribution across POD products')[0];
+
+    const prompt = `${promptBase}
+
+Return ONLY valid JSON, no other text or explanation.
+
+Generate 25 wordplays (puns) in ${language} for the niche/theme: "${niche}" FOR EACH of the requested products.
+
+CRITICAL RULE: NEVER append the product name (e.g., "Tote", "Mug", "Shirt") to the end of your puns just to mention the product. The puns must be clever, independent phrases that relate to the niche and the context of using the product, but they MUST NOT literally end with the product name.
+
+Distribute them EXACTLY as follows:
+
+${productInstructions}
+
+Return your response as a JSON array with this exact structure (no markdown, no code fences, just raw JSON):
+[
+${jsonStructure}
+]`;
+
+    if (aiEngine === 'gemini') {
+      if (!process.env.GEMINI_API_KEY) {
+        return NextResponse.json({ error: 'Gemini API key is missing' }, { status: 500 });
+      }
+
+      const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+      const model = genAI.getGenerativeModel({ model: process.env.GEMINI_MODEL || "gemini-2.5-flash-lite" });
+
+      const result = await model.generateContent({
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        generationConfig: {
+          responseMimeType: 'application/json',
+        }
+      });
+
+      const rawContent = result.response.text();
+      let puns;
+      try {
+        puns = JSON.parse(rawContent);
+      } catch (parseErr) {
+        console.error('Failed to parse puns JSON:', parseErr);
+        return NextResponse.json({ error: 'Failed to parse AI response. Please try again.' }, { status: 500 });
+      }
+
+      if (!Array.isArray(puns) || puns.length === 0) {
+        return NextResponse.json({ error: 'Invalid response format from AI. Please try again.' }, { status: 500 });
+      }
+
+      return NextResponse.json({ puns });
     }
 
     const zai = await ZAI.create();
@@ -18,99 +78,25 @@ export async function POST(req: NextRequest) {
       messages: [
         {
           role: 'system',
-          content: `${PUNS_MASTER_PROMPT}
-
-Return ONLY valid JSON, no other text or explanation.`,
+          content: `${promptBase}\n\nReturn ONLY valid JSON, no other text or explanation.`,
         },
         {
           role: 'user',
-          content: `Generate 25 wordplays (puns) in ${language} for the niche/theme: "${niche}".
-
-Distribute them EXACTLY as follows across these 9 POD product categories:
-
-1. T-Shirts (3 puns) - Eye-catching phrases, identity, humor, pride that people want to "wear proudly"
-2. Hoodies (3 puns) - Cozy phrases, mindset, weekend vibes, oversized comfort style
-3. Mugs (3 puns) - Morning routine, office, coffee/tea, tiredness phrases
-4. Tote Bags (3 puns) - Shopping, eco-friendly, outings, relaxed lifestyle phrases
-5. Stickers (3 puns) - Very short, visual, direct phrases ideal for laptops, bottles, notebooks
-6. Cap/Gorra (2 puns) - Ultra-short, attitude, sports, sun, bad hair day phrases
-7. Cushion/Cojín (2 puns) - Home, rest, laziness, decor, coziness phrases
-8. Blanket/Manta (2 puns) - Sleep, winter, binge-watching, warmth, extreme laziness phrases
-9. MousePad (2 puns) - Office work, gaming, productivity, technology, work stress phrases
-
-Return your response as a JSON array with this exact structure (no markdown, no code fences, just raw JSON):
-[
-  {
-    "icon": "👕",
-    "name": "T-Shirts",
-    "productKey": "T-Shirt",
-    "description": "Eye-catching phrases, identity, humor, pride",
-    "items": ["pun 1", "pun 2", "pun 3"]
-  },
-  {
-    "icon": "🧥",
-    "name": "Hoodies",
-    "productKey": "Hoodie",
-    "description": "Cozy phrases, mindset, weekend vibes",
-    "items": ["pun 1", "pun 2", "pun 3"]
-  },
-  {
-    "icon": "☕",
-    "name": "Mugs",
-    "productKey": "Mug/Taza",
-    "description": "Morning routine, office, coffee/tea, tiredness",
-    "items": ["pun 1", "pun 2", "pun 3"]
-  },
-  {
-    "icon": "🛍️",
-    "name": "Tote Bags",
-    "productKey": "Tote Bag",
-    "description": "Shopping, eco-friendly, relaxed lifestyle",
-    "items": ["pun 1", "pun 2", "pun 3"]
-  },
-  {
-    "icon": "🏷️",
-    "name": "Stickers",
-    "productKey": "Sticker",
-    "description": "Very short, visual, direct phrases",
-    "items": ["pun 1", "pun 2", "pun 3"]
-  },
-  {
-    "icon": "🧢",
-    "name": "Cap/Gorra",
-    "productKey": "Cap/Gorra",
-    "description": "Ultra-short, attitude, sports, sun",
-    "items": ["pun 1", "pun 2"]
-  },
-  {
-    "icon": "🛋️",
-    "name": "Cushion/Cojín",
-    "productKey": "Cushion/Cojín",
-    "description": "Home, rest, laziness, decor, coziness",
-    "items": ["pun 1", "pun 2"]
-  },
-  {
-    "icon": "🛌",
-    "name": "Blanket/Manta",
-    "productKey": "Blanket/Manta",
-    "description": "Sleep, winter, binge-watching, warmth",
-    "items": ["pun 1", "pun 2"]
-  },
-  {
-    "icon": "🖱️",
-    "name": "MousePad",
-    "productKey": "Mousepad",
-    "description": "Office work, gaming, productivity, stress",
-    "items": ["pun 1", "pun 2"]
-  }
-]`,
+          content: prompt,
         },
       ],
     });
 
+    if (!completion || !completion.choices || completion.choices.length === 0) {
+      console.error('AI API returned an unexpected response or error:', JSON.stringify(completion, null, 2));
+      return NextResponse.json(
+        { error: 'El servicio de IA no pudo generar el contenido. Por favor intenta de nuevo.' },
+        { status: 502 }
+      );
+    }
+
     const rawContent = completion.choices[0]?.message?.content || '';
 
-    // Parse the JSON response - handle potential markdown code fences
     let puns;
     try {
       const cleanedContent = rawContent
@@ -120,7 +106,6 @@ Return your response as a JSON array with this exact structure (no markdown, no 
       puns = JSON.parse(cleanedContent);
     } catch (parseErr) {
       console.error('Failed to parse puns JSON:', parseErr);
-      console.error('Raw content:', rawContent);
       return NextResponse.json(
         { error: 'Failed to parse AI response. Please try again.' },
         { status: 500 }

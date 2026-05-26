@@ -13,6 +13,8 @@ export async function GET() {
       recentPrompts,
       promptsByProduct,
       promptsByNiche,
+      totalPunSessions,
+      totalPunsGenerated
     ] = await Promise.all([
       db.prompt.count(),
       db.project.count(),
@@ -39,6 +41,8 @@ export async function GET() {
       }),
       db.prompt.groupBy({ by: ['product'], _count: { product: true }, orderBy: { _count: { product: 'desc' } } }),
       db.prompt.groupBy({ by: ['niche'], _count: { niche: true }, orderBy: { _count: { niche: 'desc' } } }),
+      db.punSession.count(),
+      db.pun.count(),
     ]);
 
     return NextResponse.json({
@@ -51,6 +55,8 @@ export async function GET() {
       recentPrompts,
       promptsByProduct: promptsByProduct.map(p => ({ name: p.product, count: p._count.product })),
       promptsByNiche: promptsByNiche.map(n => ({ name: n.niche, count: n._count.niche })),
+      totalPunSessions,
+      totalPunsGenerated
     });
   } catch (error) {
     console.error('Error fetching stats:', error);

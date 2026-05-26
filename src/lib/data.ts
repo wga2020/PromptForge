@@ -52,20 +52,363 @@ export const NICHES = [
   "Literatura",
 ];
 
-export const DESIGN_STYLES = [
-  "Minimalist",
-  "Vintage/Retro",
-  "Modern Bold",
-  "Elegant",
-  "Grunge",
-  "Boho",
-  "Kawaii",
-  "Streetwear",
-  "Art Deco",
-  "Synthwave",
-  "Watercolor",
-  "Typography-focused",
+// ============================================================
+// DESIGN STYLES — Enriched with visual metadata
+// ============================================================
+export interface DesignStyleDef {
+  id: string;
+  name: string;           // Used as the style value in prompts
+  keywords: string[];     // Mood/aesthetic descriptors shown in UI
+  previewColor: string;   // Representative hex color for style card
+  previewGradient: string; // CSS gradient for card background
+  popularPOD: boolean;    // Top-5 seller in POD market
+  bestNiches: string[];   // Niches where this style converts best
+  bestProducts: string[]; // Products where this style performs best
+  emoji: string;          // Visual icon for the style
+}
+
+export const DESIGN_STYLES_ENRICHED: DesignStyleDef[] = [
+  {
+    id: 'minimalist',
+    name: 'Minimalist',
+    keywords: ['Clean', 'Simple', 'Modern', 'Elegante'],
+    previewColor: '#2C3E50',
+    previewGradient: 'linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 100%)',
+    popularPOD: true,
+    bestNiches: ['Moda/Estilo', 'Motivacional', 'Eco/Sostenibilidad', 'Literatura'],
+    bestProducts: ['T-Shirt', 'Tote Bag', 'Poster/Lámina', 'Notebook/Agenda'],
+    emoji: '◻️',
+  },
+  {
+    id: 'vintage_retro',
+    name: 'Vintage/Retro',
+    keywords: ['Nostálgico', 'Retro', 'Desgastado', 'Clásico'],
+    previewColor: '#8B4513',
+    previewGradient: 'linear-gradient(135deg, #D4A574 0%, #8B4513 100%)',
+    popularPOD: true,
+    bestNiches: ['Deportes', 'Música', 'Hobbies', 'Comida/Bebida', 'Pop Culture'],
+    bestProducts: ['T-Shirt', 'Hoodie', 'Cap/Gorra', 'Mug/Taza'],
+    emoji: '🏷️',
+  },
+  {
+    id: 'modern_bold',
+    name: 'Modern Bold',
+    keywords: ['Impactante', 'Dinámico', 'Alto contraste', 'Audaz'],
+    previewColor: '#E74C3C',
+    previewGradient: 'linear-gradient(135deg, #E74C3C 0%, #2C3E50 100%)',
+    popularPOD: true,
+    bestNiches: ['Motivacional', 'Deportes', 'Gaming', 'Música'],
+    bestProducts: ['T-Shirt', 'Hoodie', 'Poster/Lámina', 'Mousepad'],
+    emoji: '⚡',
+  },
+  {
+    id: 'elegant',
+    name: 'Elegant',
+    keywords: ['Lujoso', 'Refinado', 'Sofisticado', 'Premium'],
+    previewColor: '#C4960C',
+    previewGradient: 'linear-gradient(135deg, #C4960C 0%, #1B1B1B 100%)',
+    popularPOD: false,
+    bestNiches: ['Moda/Estilo', 'Amor/Romance', 'Arte/Cultura', 'Fechas Especiales'],
+    bestProducts: ['Card/Invitación', 'Poster/Lámina', 'Notebook/Agenda', 'Mug/Taza'],
+    emoji: '✨',
+  },
+  {
+    id: 'grunge',
+    name: 'Grunge',
+    keywords: ['Rudo', 'Urbano', 'Desgastado', 'Raw'],
+    previewColor: '#4A4A4A',
+    previewGradient: 'linear-gradient(135deg, #2C2C2C 0%, #6B6B6B 100%)',
+    popularPOD: false,
+    bestNiches: ['Música', 'Deportes', 'Pop Culture', 'Humor/Memes'],
+    bestProducts: ['T-Shirt', 'Hoodie', 'Sticker', 'Cap/Gorra'],
+    emoji: '🤘',
+  },
+  {
+    id: 'boho',
+    name: 'Boho',
+    keywords: ['Orgánico', 'Artesanal', 'Libre', 'Étnico'],
+    previewColor: '#CC5500',
+    previewGradient: 'linear-gradient(135deg, #D4A373 0%, #CC5500 100%)',
+    popularPOD: false,
+    bestNiches: ['Naturaleza', 'Eco/Sostenibilidad', 'Hobbies', 'Amor/Romance'],
+    bestProducts: ['Tote Bag', 'Cushion/Cojín', 'Notebook/Agenda', 'T-Shirt'],
+    emoji: '🌿',
+  },
+  {
+    id: 'kawaii',
+    name: 'Kawaii',
+    keywords: ['Tierno', 'Pastel', 'Adorable', 'Japonés'],
+    previewColor: '#FF90B3',
+    previewGradient: 'linear-gradient(135deg, #FFB3BA 0%, #BAE1FF 100%)',
+    popularPOD: true,
+    bestNiches: ['Infantil', 'Amor/Romance', 'Hobbies', 'Humor/Memes'],
+    bestProducts: ['Sticker', 'Phone Case', 'Pin/Badge', 'T-Shirt'],
+    emoji: '🌸',
+  },
+  {
+    id: 'streetwear',
+    name: 'Streetwear',
+    keywords: ['Urbano', 'Hip-Hop', 'Street', 'Atrevido'],
+    previewColor: '#1C1C1C',
+    previewGradient: 'linear-gradient(135deg, #1C1C1C 0%, #4A4A4A 100%)',
+    popularPOD: true,
+    bestNiches: ['Música', 'Gaming', 'Deportes', 'Pop Culture'],
+    bestProducts: ['Hoodie', 'T-Shirt', 'Cap/Gorra', 'Mousepad'],
+    emoji: '🏙️',
+  },
+  {
+    id: 'art_deco',
+    name: 'Art Deco',
+    keywords: ['Geométrico', 'Dorado', 'Años 20', 'Glamour'],
+    previewColor: '#C5A059',
+    previewGradient: 'linear-gradient(135deg, #1A1A1A 0%, #C5A059 100%)',
+    popularPOD: false,
+    bestNiches: ['Arte/Cultura', 'Moda/Estilo', 'Fechas Especiales', 'Literatura'],
+    bestProducts: ['Poster/Lámina', 'Card/Invitación', 'Notebook/Agenda', 'Cushion/Cojín'],
+    emoji: '🔶',
+  },
+  {
+    id: 'synthwave',
+    name: 'Synthwave',
+    keywords: ['Neón', 'Retro-Futurista', '80s', 'Cyberpunk'],
+    previewColor: '#00D4FF',
+    previewGradient: 'linear-gradient(135deg, #0A0A0A 0%, #6B21A8 50%, #00D4FF 100%)',
+    popularPOD: false,
+    bestNiches: ['Gaming', 'Música', 'Ciencia/Tech', 'Pop Culture'],
+    bestProducts: ['Mousepad', 'Hoodie', 'Poster/Lámina', 'Phone Case'],
+    emoji: '🌐',
+  },
+  {
+    id: 'watercolor',
+    name: 'Watercolor',
+    keywords: ['Acuarela', 'Suave', 'Fluido', 'Artístico'],
+    previewColor: '#45B7D1',
+    previewGradient: 'linear-gradient(135deg, #FFB3BA 0%, #BAE1FF 50%, #BAFFC9 100%)',
+    popularPOD: false,
+    bestNiches: ['Naturaleza', 'Amor/Romance', 'Fechas Especiales', 'Arte/Cultura'],
+    bestProducts: ['Card/Invitación', 'Notebook/Agenda', 'Poster/Lámina', 'Blanket/Manta'],
+    emoji: '🎨',
+  },
+  {
+    id: 'typography_focused',
+    name: 'Typography-focused',
+    keywords: ['Tipográfico', 'Letras', 'Bold', 'Texto como arte'],
+    previewColor: '#1B1B1B',
+    previewGradient: 'linear-gradient(135deg, #1B1B1B 0%, #444444 100%)',
+    popularPOD: true,
+    bestNiches: ['Motivacional', 'Humor/Memes', 'Literatura', 'Profesiones'],
+    bestProducts: ['T-Shirt', 'Mug/Taza', 'Tote Bag', 'Poster/Lámina'],
+    emoji: '🔤',
+  },
 ];
+
+// Keep backward-compatible flat array for existing prompt generation code
+export const DESIGN_STYLES = DESIGN_STYLES_ENRICHED.map(s => s.name);
+
+// ============================================================
+// STYLE → NICHE COMPATIBILITY MAP
+// Returns styles sorted by relevance for a given niche
+// ============================================================
+export function getRecommendedStylesForNiche(niche: string, product: string): DesignStyleDef[] {
+  return [...DESIGN_STYLES_ENRICHED].sort((a, b) => {
+    const aMatchesNiche = a.bestNiches.includes(niche) ? 2 : 0;
+    const bMatchesNiche = b.bestNiches.includes(niche) ? 2 : 0;
+    const aMatchesProduct = a.bestProducts.includes(product) ? 1 : 0;
+    const bMatchesProduct = b.bestProducts.includes(product) ? 1 : 0;
+    const aScore = aMatchesNiche + aMatchesProduct + (a.popularPOD ? 0.5 : 0);
+    const bScore = bMatchesNiche + bMatchesProduct + (b.popularPOD ? 0.5 : 0);
+    return bScore - aScore;
+  });
+}
+
+// ============================================================
+// NICHE TEXT EXAMPLES — Hardcoded fallbacks for instant UI
+// Used while AI generates personalized suggestions
+// ============================================================
+export const NICHE_TEXT_EXAMPLES: Record<string, {
+  primary: string[];
+  secondary: string[];
+  accent: string[];
+}> = {
+  "Motivacional": {
+    primary: ["Rise & Grind", "Make It Happen", "Dream Big", "No Excuses", "Stay Focused", "Level Up"],
+    secondary: ["Every day is a chance", "Believe in yourself", "Keep going"],
+    accent: ["#Goals", "Hustle", "Unstoppable"],
+  },
+  "Profesiones": {
+    primary: ["Born to Code", "Nurse Life", "Teacher Mode", "Chef at Heart", "Doctor by Day", "Engineer Mindset"],
+    secondary: ["Proud professional", "Passion made career", "Skills pay the bills"],
+    accent: ["Since Day One", "Pro Level", "Certified"],
+  },
+  "Hobbies": {
+    primary: ["Reel Life", "Coffee & Books", "Born to Hike", "Shoot to Thrill", "Hook & Line", "Play It Right"],
+    secondary: ["Hobby becomes lifestyle", "Passion never stops", "Weekend warrior"],
+    accent: ["All Day", "24/7", "Obsessed"],
+  },
+  "Religión": {
+    primary: ["Faith Over Fear", "Blessed & Grateful", "God Is Good", "Walk by Faith", "His Grace", "Pray Always"],
+    secondary: ["Trust in the Lord", "Grace upon grace", "His plan, not mine"],
+    accent: ["Amen", "Blessed", "Glory"],
+  },
+  "Pop Culture": {
+    primary: ["Main Character", "Plot Twist", "Fan Since Day One", "Cult Classic", "Fandom Forever", "Iconic"],
+    secondary: ["Just here for the vibes", "Living in my era", "This is the way"],
+    accent: ["Obsessed", "Vibes Only", "Canon"],
+  },
+  "Fechas Especiales": {
+    primary: ["Happy Birthday", "Cheers to 30", "Best Day Ever", "Party Season", "Celebrate Life", "Another Year Older"],
+    secondary: ["Today is your day", "Make a wish", "Celebrate good times"],
+    accent: ["Cheers!", "Woo!", "Celebrate"],
+  },
+  "Amor/Romance": {
+    primary: ["You & Me", "Love You More", "My Person", "Better Together", "Always & Forever", "Soulmates"],
+    secondary: ["Every day with you", "You had me at hello", "My favorite person"],
+    accent: ["Always", "Forever", "XOXO"],
+  },
+  "Naturaleza": {
+    primary: ["Into the Wild", "Born Free", "Earth Lover", "Nature First", "Wild at Heart", "Go Outside"],
+    secondary: ["Leave no trace", "Forest therapy", "The earth is calling"],
+    accent: ["Explore", "Wander", "Free"],
+  },
+  "Ciencia/Tech": {
+    primary: ["Code & Coffee", "Debug Mode", "Binary Dreams", "404 Sleep Not Found", "Think Digital", "Stay Geeky"],
+    secondary: ["It compiles, ship it", "There's no place like", "The cloud is the limit"],
+    accent: ["01001", "git push", "CTRL+Z"],
+  },
+  "Deportes": {
+    primary: ["Game Day", "Train Hard", "All In", "Built Different", "No Days Off", "Sweat Now"],
+    secondary: ["Play like a champion", "Heart of a winner", "Born to compete"],
+    accent: ["Beast Mode", "Game On", "MVP"],
+  },
+  "Comida/Bebida": {
+    primary: ["Foodie Life", "Coffee First", "Wine Not?", "Pizza is Life", "Taco Tuesday", "Brunch Club"],
+    secondary: ["Powered by caffeine", "Life is too short for bad food", "But first, coffee"],
+    accent: ["Sip Sip", "Cheers", "Yum"],
+  },
+  "Viajes": {
+    primary: ["Wanderlust", "Not All Who Wander", "Passport Ready", "World Explorer", "Born to Roam", "Jet Set Go"],
+    secondary: ["Collect moments not things", "Adventure awaits", "The world is yours"],
+    accent: ["Explore", "Roam", "Discover"],
+  },
+  "Arte/Cultura": {
+    primary: ["Art is Life", "Create Daily", "Make Art", "Brush Strokes", "Stay Creative", "Art Never Stops"],
+    secondary: ["Every stroke tells a story", "Art speaks where words fail", "Create your world"],
+    accent: ["Create", "Inspire", "Imagine"],
+  },
+  "Eco/Sostenibilidad": {
+    primary: ["Go Green", "Save the Planet", "Earth First", "Eco Warrior", "Less Plastic", "Plant Trees"],
+    secondary: ["One planet, one chance", "Live green, think green", "Reduce, reuse, rethink"],
+    accent: ["Green", "Eco", "Recycle"],
+  },
+  "Moda/Estilo": {
+    primary: ["Style Always", "Fashion Forward", "Dress to Impress", "Trendsetter", "Serve Looks", "Outfit Goals"],
+    secondary: ["Confidence is key", "Dress how you want to feel", "Style is a way to say who you are"],
+    accent: ["OOTD", "Slay", "Chic"],
+  },
+  "Gaming": {
+    primary: ["Player One", "Game Over Reality", "Level 99", "GG No Re", "Respawn", "Git Gud"],
+    secondary: ["I paused my game for this", "Born to game, forced to work", "Insert coin to start"],
+    accent: ["GG", "AFK", "Noob"],
+  },
+  "Música": {
+    primary: ["Music is Life", "Live for Sound", "Born to Rock", "Turn It Up", "Feel the Beat", "Lost in Music"],
+    secondary: ["Life is better with music", "When words fail, music speaks", "Soundtrack of my life"],
+    accent: ["Play On", "Loud", "Encore"],
+  },
+  "Infantil": {
+    primary: ["Future Leader", "Little Explorer", "Tiny Human", "Born to Shine", "Dream Big Kid", "Super Kid"],
+    secondary: ["Growing up fast", "Watch me grow", "Cute but fierce"],
+    accent: ["Yay!", "Whoosh", "Awesome"],
+  },
+  "Humor/Memes": {
+    primary: ["I Woke Up Like This", "Adulting Is Hard", "Nap Queen", "Send Coffee", "Zero Chill", "Mood"],
+    secondary: ["Not a morning person", "Professionally awkward", "Error 404: Motivation not found"],
+    accent: ["Lol", "Same", "Big Yikes"],
+  },
+  "Literatura": {
+    primary: ["Bookworm", "One More Chapter", "Born to Read", "Story Lover", "Page Turner", "Lost in a Book"],
+    secondary: ["A reader lives a thousand lives", "Books are portals", "Coffee, books, repeat"],
+    accent: ["Read More", "Chapter One", "Prologue"],
+  },
+};
+
+// ============================================================
+// COLOR PALETTES — Enriched with metadata
+// ============================================================
+export interface PaletteInfo {
+  colors: string[];
+  mood: string;
+  bestStyles: string[];    // Style names that pair well
+  bestNiches: string[];    // Niches this palette fits
+}
+
+export const COLOR_PALETTES_META: Record<string, PaletteInfo> = {
+  "Elegant Gold": {
+    colors: ["#C4960C", "#1B1B1B", "#722F37", "#F5F0E8"],
+    mood: "Lujoso · Premium · Clásico",
+    bestStyles: ["Elegant", "Art Deco", "Typography-focused"],
+    bestNiches: ["Moda/Estilo", "Arte/Cultura", "Fechas Especiales"],
+  },
+  "Bold Primary": {
+    colors: ["#E74C3C", "#2C3E50", "#F39C12", "#ECF0F1"],
+    mood: "Enérgico · Impactante · Directo",
+    bestStyles: ["Modern Bold", "Streetwear", "Typography-focused"],
+    bestNiches: ["Motivacional", "Deportes", "Humor/Memes"],
+  },
+  "Pastel Soft": {
+    colors: ["#FFB3BA", "#BAFFC9", "#BAE1FF", "#FFFFBA"],
+    mood: "Tierno · Dulce · Suave",
+    bestStyles: ["Kawaii", "Watercolor", "Boho"],
+    bestNiches: ["Infantil", "Amor/Romance", "Naturaleza"],
+  },
+  "Dark Neon": {
+    colors: ["#00D4FF", "#0A0A0A", "#39FF14", "#FF073A"],
+    mood: "Eléctrico · Cyberpunk · Nocturno",
+    bestStyles: ["Synthwave", "Streetwear", "Modern Bold"],
+    bestNiches: ["Gaming", "Música", "Ciencia/Tech"],
+  },
+  "Earth Tones": {
+    colors: ["#8B4513", "#D2B48C", "#CC5500", "#F5F0E8"],
+    mood: "Natural · Cálido · Orgánico",
+    bestStyles: ["Boho", "Vintage/Retro", "Minimalist"],
+    bestNiches: ["Naturaleza", "Eco/Sostenibilidad", "Hobbies"],
+  },
+  "Monochrome": {
+    colors: ["#000000", "#333333", "#666666", "#FFFFFF"],
+    mood: "Minimalista · Atemporal · Clean",
+    bestStyles: ["Minimalist", "Typography-focused", "Elegant"],
+    bestNiches: ["Moda/Estilo", "Arte/Cultura", "Motivacional"],
+  },
+  "Vibrant Pop": {
+    colors: ["#FF6B6B", "#4ECDC4", "#45B7D1", "#FFA07A"],
+    mood: "Alegre · Fresco · Energético",
+    bestStyles: ["Kawaii", "Modern Bold", "Watercolor"],
+    bestNiches: ["Infantil", "Pop Culture", "Fechas Especiales"],
+  },
+  "Coastal Blue": {
+    colors: ["#1A5276", "#2E86C1", "#85C1E9", "#F0F8FF"],
+    mood: "Sereno · Fresco · Confiable",
+    bestStyles: ["Minimalist", "Elegant", "Watercolor"],
+    bestNiches: ["Naturaleza", "Viajes", "Eco/Sostenibilidad"],
+  },
+  "Forest Green": {
+    colors: ["#2D5016", "#6B4423", "#DAA520", "#FEFDF8"],
+    mood: "Rústico · Natural · Aventurero",
+    bestStyles: ["Vintage/Retro", "Boho", "Minimalist"],
+    bestNiches: ["Naturaleza", "Hobbies", "Deportes"],
+  },
+  "Sunset Warm": {
+    colors: ["#FF4500", "#FF8C00", "#FFD700", "#FFF8DC"],
+    mood: "Cálido · Brillante · Optimista",
+    bestStyles: ["Modern Bold", "Vintage/Retro", "Typography-focused"],
+    bestNiches: ["Motivacional", "Viajes", "Deportes"],
+  },
+};
+
+// Keep backward-compatible flat color map
+export const COLOR_PALETTES: Record<string, string[]> = Object.fromEntries(
+  Object.entries(COLOR_PALETTES_META).map(([k, v]) => [k, v.colors])
+);
 
 export const AI_TOOLS = [
   "Midjourney",
@@ -75,19 +418,6 @@ export const AI_TOOLS = [
   "Stable Diffusion",
   "Flux",
 ];
-
-export const COLOR_PALETTES: Record<string, string[]> = {
-  "Elegant Gold": ["#C4960C", "#1B1B1B", "#722F37", "#F5F0E8"],
-  "Bold Primary": ["#E74C3C", "#2C3E50", "#F39C12", "#ECF0F1"],
-  "Pastel Soft": ["#FFB3BA", "#BAFFC9", "#BAE1FF", "#FFFFBA"],
-  "Dark Neon": ["#00D4FF", "#0A0A0A", "#39FF14", "#FF073A"],
-  "Earth Tones": ["#8B4513", "#D2B48C", "#CC5500", "#F5F0E8"],
-  "Monochrome": ["#000000", "#333333", "#666666", "#FFFFFF"],
-  "Vibrant Pop": ["#FF6B6B", "#4ECDC4", "#45B7D1", "#FFA07A"],
-  "Coastal Blue": ["#1A5276", "#2E86C1", "#85C1E9", "#F0F8FF"],
-  "Forest Green": ["#2D5016", "#6B4423", "#DAA520", "#FEFDF8"],
-  "Sunset Warm": ["#FF4500", "#FF8C00", "#FFD700", "#FFF8DC"],
-};
 
 // ============================================================
 // OBJECT CATEGORIES FOR DESIGN CUSTOMIZATION
@@ -273,30 +603,34 @@ export const PRODUCT_PROMPT_CONFIG: Record<string, {
   typographySpec: string;
   qualityMarkers: string;
   chromaColor: string;
+  aspectRatio: string;
 }> = {
   "T-Shirt": {
     productContext: "T-shirt print design, crisp edges, sticker-style silhouette",
-    backgroundSpec: "isolated on a solid flat {chromaColor} background for easy background removal in Photoshop, no background scenery, no shadows touching the edges, clean silhouette separation",
+    backgroundSpec: "isolated on a solid flat {chromaColor} background for easy background removal in Photoshop, no background scenery, no shadows touching the edges, clean silhouette separation. MANDATORY: The design MUST have a solid WHITE BORDER/OUTLINE (#FFFFFF) around all elements to ensure perfect edge separation from the chroma background.",
     compositionSpec: "Centered composition",
     typographySpec: "Bold typography with short impactful text, slogan or phrase in ENGLISH related to the theme, integrated naturally into the composition",
     qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 4500x5400px, 300 DPI, print-ready for DTG and screen printing",
     chromaColor: "chroma green",
+    aspectRatio: "3:4",
   },
   "Hoodie": {
     productContext: "Hoodie print design, bold oversized graphic, statement piece with crisp edges, sticker-style silhouette",
-    backgroundSpec: "isolated on a solid flat {chromaColor} background for easy background removal in Photoshop, no background scenery, no shadows touching the edges, clean silhouette separation",
+    backgroundSpec: "isolated on a solid flat {chromaColor} background for easy background removal in Photoshop, no background scenery, no shadows touching the edges, clean silhouette separation. MANDATORY: The design MUST have a solid WHITE BORDER/OUTLINE (#FFFFFF) around all elements to ensure perfect edge separation from the chroma background.",
     compositionSpec: "Large centered composition, impactful at distance",
     typographySpec: "Bold oversized typography with short impactful text, slogan or phrase in ENGLISH related to the theme, integrated naturally into the composition, readable from 2 meters away",
     qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 4500x5400px, 300 DPI, print-ready for DTG and DTF printing on fleece fabric",
     chromaColor: "chroma green",
+    aspectRatio: "3:4",
   },
   "Mug/Taza": {
-    productContext: "Mug wrap-around print design, cylindrical surface compatible, visible from front viewing angle",
-    backgroundSpec: "clean solid color background that complements the design, no distracting scenery, soft shadows acceptable for product mockup context",
-    compositionSpec: "Centered horizontal composition optimized for front-of-mug visibility",
-    typographySpec: "Clear legible typography with short impactful text, slogan or phrase in ENGLISH related to the theme, sized for comfortable reading at arm's length",
-    qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 2700x1520px, 300 DPI, print-ready for sublimation and direct printing on ceramic",
+    productContext: "FLAT 2D print-ready artwork for mug sublimation. This is NOT a product photo or mockup. This is a FLAT DESIGN FILE that will be digitally printed onto a mug surface. Generate the 2D artwork only, as if it were a flat rectangle of paper.",
+    backgroundSpec: "CRITICAL: isolated on a solid flat white background (#FFFFFF). NO mug, NO cup, NO ceramic object, NO 3D rendering, NO product photography, NO mockup, NO shadows of a product. This is a FLAT PRINT FILE ONLY. Clean white background, the artwork floats flat on it.",
+    compositionSpec: "Horizontal composition, wider than tall (landscape orientation), centered artwork optimized for the front panel of a 11oz mug wrap. Keep all critical elements within the center 60% width zone.",
+    typographySpec: "Clear bold legible typography with short impactful text in ENGLISH related to the theme, comfortably sized for reading at arm's length on a mug",
+    qualityMarkers: "Ultra detailed, 4K, professional flat graphic design for sublimation printing, 2700x1520px, 300 DPI, sublimation-print-ready for ceramic mug, NO 3D PRODUCT RENDERING",
     chromaColor: "solid white",
+    aspectRatio: "16:9",
   },
   "Poster/Lámina": {
     productContext: "Poster wall art print design, gallery-quality fine art presentation, decorative statement piece",
@@ -305,6 +639,7 @@ export const PRODUCT_PROMPT_CONFIG: Record<string, {
     typographySpec: "Artistic typography with text, quote or phrase in ENGLISH related to the theme, integrated as a design element within the composition, elegant kerning and layout",
     qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 6000x8000px, 300 DPI, gallery-quality giclée print-ready, museum-grade aesthetic",
     chromaColor: "full artistic background",
+    aspectRatio: "3:4",
   },
   "Phone Case": {
     productContext: "Phone case edge-to-edge print design, camera cutout compatible, slim profile aesthetic",
@@ -313,22 +648,25 @@ export const PRODUCT_PROMPT_CONFIG: Record<string, {
     typographySpec: "Concise bold typography with short text or word in ENGLISH related to the theme, minimal text for small format, ultra-legible at phone-size viewing",
     qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 2400x4000px, 300 DPI, print-ready for case wrapping and UV printing",
     chromaColor: "full bleed background",
+    aspectRatio: "9:16",
   },
   "Tote Bag": {
     productContext: "Tote bag canvas print design, natural fabric texture compatible, eco-friendly aesthetic",
-    backgroundSpec: "isolated on a solid flat {chromaColor} background for easy background removal, no background scenery, clean edges for fabric printing on cotton canvas",
+    backgroundSpec: "isolated on a solid flat {chromaColor} background for easy background removal, no background scenery, clean edges for fabric printing on cotton canvas. MANDATORY: The design MUST have a solid WHITE BORDER/OUTLINE (#FFFFFF) around all elements to ensure perfect edge separation from the chroma background.",
     compositionSpec: "Centered composition, bold and visible from distance, consider fabric absorption",
     typographySpec: "Bold typography with short impactful text, slogan or phrase in ENGLISH related to the theme, thick strokes for canvas printing clarity, integrated naturally into the composition",
     qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 3600x4200px, 300 DPI, print-ready for screen printing and DTG on cotton canvas",
     chromaColor: "chroma magenta",
+    aspectRatio: "4:5",
   },
   "Sticker": {
     productContext: "Die-cut sticker design, thick bold outlines for clean cutting path, vinyl decal aesthetic",
-    backgroundSpec: "isolated on a solid flat {chromaColor} background for easy background removal, clean die-cut edge definition, no fuzzy edges, crisp silhouette",
+    backgroundSpec: "isolated on a solid flat {chromaColor} background for easy background removal, clean die-cut edge definition, no fuzzy edges, crisp silhouette. MANDATORY: The design MUST have a solid thick WHITE BORDER/OUTLINE (#FFFFFF) around the entire silhouette to act as a die-cut line and buffer against the chroma background.",
     compositionSpec: "Compact centered composition, bold simple shapes, maximum impact at small size",
     typographySpec: "Extra bold condensed typography with short text or word in ENGLISH, 1-3 words maximum, ultra-thick strokes for small-format legibility, high contrast against design",
     qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 3000x3000px, 300 DPI, print-ready for vinyl die-cut sticker production with kiss-cut edges",
     chromaColor: "chroma green",
+    aspectRatio: "1:1",
   },
   "Notebook/Agenda": {
     productContext: "Notebook cover design, premium stationery aesthetic, spine-safe layout",
@@ -337,14 +675,16 @@ export const PRODUCT_PROMPT_CONFIG: Record<string, {
     typographySpec: "Elegant typography with title or phrase in ENGLISH related to the theme, sophisticated lettering that conveys quality and craftsmanship, integrated as a key design element",
     qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 2400x3200px, 300 DPI, print-ready for hardcover and softcover binding with lamination",
     chromaColor: "full cover background",
+    aspectRatio: "2:3",
   },
   "Cap/Gorra": {
     productContext: "Cap front panel embroidery/print design, structured crown compatible, bold simple shapes for thread rendering",
-    backgroundSpec: "isolated on a solid flat {chromaColor} background for easy background removal, no background scenery, clean silhouette for embroidery digitizing",
+    backgroundSpec: "isolated on a solid flat {chromaColor} background for easy background removal, no background scenery, clean silhouette for embroidery digitizing. MANDATORY: The design MUST have a solid WHITE BORDER/OUTLINE (#FFFFFF) around all elements to ensure perfect edge separation from the chroma background.",
     compositionSpec: "Compact centered composition within front panel area, simplified for embroidery thread limitation",
     typographySpec: "Bold block typography with short text in ENGLISH, 1-3 words maximum, thick block letters suitable for embroidery digitizing, no thin serifs or delicate scripts",
     qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 2800x1800px, 300 DPI, embroidery-friendly with minimum 0.5mm stroke width, print-ready for front panel application",
     chromaColor: "chroma green",
+    aspectRatio: "3:2",
   },
   "Cushion/Cojín": {
     productContext: "Decorative cushion cover design, soft home decor aesthetic, front face print area",
@@ -353,6 +693,7 @@ export const PRODUCT_PROMPT_CONFIG: Record<string, {
     typographySpec: "Decorative typography with text or phrase in ENGLISH related to the theme, warm and inviting lettering style that complements home aesthetics",
     qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 3600x3600px, 300 DPI, print-ready for sublimation on polyester cushion cover",
     chromaColor: "full decorative background",
+    aspectRatio: "1:1",
   },
   "Blanket/Manta": {
     productContext: "Blanket all-over print design, cozy warm aesthetic, large-format textile application",
@@ -361,14 +702,16 @@ export const PRODUCT_PROMPT_CONFIG: Record<string, {
     typographySpec: "Large comfortable typography with text or phrase in ENGLISH related to the theme, warm inviting lettering, readable at distance with soft fabric consideration",
     qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 5400x7200px, 300 DPI, print-ready for sublimation on fleece and woven blanket materials",
     chromaColor: "full coverage background",
+    aspectRatio: "4:5",
   },
   "Pin/Badge": {
     productContext: "Enamel pin design, hard enamel or soft enamel style, metal border outline, compact circular format",
-    backgroundSpec: "isolated on a solid flat {chromaColor} background for easy background removal, clean metal border definition, no fuzzy edges, bold solid color fills",
+    backgroundSpec: "isolated on a solid flat {chromaColor} background for easy background removal, clean metal border definition, no fuzzy edges, bold solid color fills. MANDATORY: The design MUST have a solid WHITE BORDER/OUTLINE (#FFFFFF) around all elements to ensure perfect edge separation from the chroma background.",
     compositionSpec: "Compact centered circular composition, extremely simplified for 1-2 inch physical size, maximum 2-3 colors for enamel production",
     typographySpec: "Ultra bold condensed typography with 1-2 words maximum in ENGLISH, block letters with thick strokes, minimum 3mm character height for physical pin legibility, no scripts or serifs",
     qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 1000x1000px, 300 DPI, enamel pin production-ready with metal plating lines and color separations",
     chromaColor: "chroma green",
+    aspectRatio: "1:1",
   },
   "Card/Invitación": {
     productContext: "Premium invitation card design, fine stationery aesthetic, elegant presentation",
@@ -377,6 +720,7 @@ export const PRODUCT_PROMPT_CONFIG: Record<string, {
     typographySpec: "Elegant refined typography with formal text in ENGLISH, calligraphic script for names paired with classic serif for details, sophisticated kerning and leading, luxury stationery lettering quality",
     qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 2400x3600px, 300 DPI, letterpress and foil-ready, print-ready on premium cardstock with envelope",
     chromaColor: "full elegant background",
+    aspectRatio: "3:4",
   },
   "Mousepad": {
     productContext: "Mousepad full surface design, desk accessory aesthetic, functional workspace enhancement",
@@ -385,6 +729,7 @@ export const PRODUCT_PROMPT_CONFIG: Record<string, {
     typographySpec: "Moderate typography with text in ENGLISH related to the theme, balanced against illustrative elements, legible while using the mouse on the pad surface",
     qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 3600x2700px, 300 DPI, print-ready for sublimation on fabric-top rubber-base mousepad",
     chromaColor: "full bleed background",
+    aspectRatio: "4:3",
   },
   "Cover Ebook": {
     productContext: "Ebook cover design, bestselling book cover aesthetic, visually stunning and captivating at thumbnail size, professional publishing quality",
@@ -393,6 +738,7 @@ export const PRODUCT_PROMPT_CONFIG: Record<string, {
     typographySpec: "Bestselling book cover typography with bold captivating title in ENGLISH as the primary visual anchor, rendered in a style that conveys the genre and tone of the book, author name in clean complementary font at the bottom, tagline or subtitle in smaller supporting text, all text perfectly legible at thumbnail size (120px wide), with dramatic text effects such as emboss, glow, shadow or metallic finish to enhance visual impact and create a premium feel",
     qualityMarkers: "Ultra detailed, 4K, professional book cover design, trending on Behance and BookCoverArchive, 2500x4000px, 300 DPI, Amazon KDP compliant, print-ready for paperback and hardcover wrap, optimized for digital storefront thumbnail display, award-winning book cover aesthetic",
     chromaColor: "full cinematic background",
+    aspectRatio: "2:3",
   },
 };
 
@@ -739,6 +1085,7 @@ export function generatePromptText(data: {
   paletteName: string;
   aiTool: string;
   selectedObjects?: string[];
+  garmentTone?: 'dark' | 'light' | 'any';
 }): string {
   const config = PRODUCT_PROMPT_CONFIG[data.product] || PRODUCT_PROMPT_CONFIG["T-Shirt"];
   const fontAesthetic = STYLE_FONT_AESTHETIC[data.style] || STYLE_FONT_AESTHETIC["Modern Bold"];
@@ -755,23 +1102,17 @@ export function generatePromptText(data: {
 
   // Build the typography section
   let typographySection = config.typographySpec;
-  typographySection += `, using a ${fontAesthetic} font style that matches the aesthetic (specifically: "${data.fonts.principal}" for the primary text`;
-  if (data.secondaryText) {
-    typographySection += `, "${data.fonts.secundaria}" for the secondary text`;
-  }
-  if (data.accentText) {
-    typographySection += `, "${data.fonts.acento}" for accent details`;
-  }
-  typographySection += `). All text must be written exclusively in English, perfectly legible, correctly spelled, with clean kerning and high contrast against the design`;
+  typographySection += ` with clean kerning and high contrast against the design. The lettering style must be a ${fontAesthetic}. All text must be perfectly legible and correctly spelled.`;
 
   // Build the text content section
-  let textContent = `Primary text: "${data.primaryText}"`;
+  let textContent = `Primary text written out: "${data.primaryText}"`;
   if (data.secondaryText) {
-    textContent += `. Secondary text: "${data.secondaryText}"`;
+    textContent += `. Secondary text written out: "${data.secondaryText}"`;
   }
   if (data.accentText) {
-    textContent += `. Accent detail: "${data.accentText}"`;
+    textContent += `. Accent detail written out: "${data.accentText}"`;
   }
+  textContent += `. No template text`;
 
   // Build the color palette section
   const colorSection = `Rich and vibrant color palette based on ${data.paletteName} (${colorStr}) with smooth gradients, depth and dimension`;
@@ -783,21 +1124,32 @@ export function generatePromptText(data: {
     objectsSection = `Featuring detailed illustrations of: ${objectsList}. Each object rendered with precision, realistic proportions, and integrated harmoniously into the composition. `;
   }
 
+  // Build the contrast section based on garmentTone
+  let contrastSection = "";
+  if (data.garmentTone === 'dark') {
+    contrastSection = "MANDATORY: Use LIGHT, BRIGHT colors for typography and main elements. The design will be printed on a BLACK/DARK garment, so high contrast is essential. Avoid dark texts.";
+  } else if (data.garmentTone === 'light') {
+    contrastSection = "MANDATORY: Use DARK colors for typography and main elements. The design will be printed on a WHITE/LIGHT garment, so high contrast is essential. Avoid white texts.";
+  }
+
   // Assemble the full master prompt
   const prompt = [
+    `CRITICAL MANDATORY RULE: You must generate ONLY the flat 2D artwork itself. DO NOT generate a mockup. DO NOT draw the physical product, clothing, or garment. DO NOT include any 3D product renders, people wearing the product, or physical context. This is a flat graphic design file.`,
     `Vector illustration with hyperrealistic detail, ${data.niche} theme featuring ${nicheTheme}.`,
     objectsSection,
     illustrationApproach,
     `Bold clean vector outlines combined with photorealistic rendering, sharp shading, intricate textures, dramatic lighting with strong contrast.`,
     colorSection,
+    contrastSection,
     typographySection,
     textContent,
-    `${config.compositionSpec}, ${config.productContext}.`,
+    `${config.compositionSpec}, ${config.productContext}. REQUIRED ASPECT RATIO: ${config.aspectRatio}.`,
     backgroundSpec,
     config.qualityMarkers,
   ].join(" ");
 
-  return prompt;
+  // Append Midjourney/Standard aspect ratio flag
+  return `${prompt} --ar ${config.aspectRatio}`;
 }
 
 // ============================================================

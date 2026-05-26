@@ -1,12 +1,17 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslations, useLocale } from 'next-intl';
 import {
   LayoutDashboard, Wand2, FolderKanban, Calendar, BookOpen,
   Plus, Trash2, Edit3, Copy, Heart, Star, ChevronRight,
-  Search, Download, RefreshCw, Sparkles,
-  Menu, ArrowRight, ArrowLeft, Files, MessageSquareText
+  Search, Download, RefreshCw, Sparkles, Save, AlertCircle,
+  Menu, ArrowRight, ArrowLeft, Files, MessageSquareText, Paintbrush, Image as ImageIcon
 } from 'lucide-react';
+import { DesignWizardView } from '@/components/DesignWizardView';
+import { ImageStudioView } from '@/components/ImageStudioView';
+import { DesignCustomizationStep } from '@/components/DesignCustomizationStep';
+import { TextInputsStep } from '@/components/TextInputsStep';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -31,7 +36,7 @@ import {
 // ============================================================
 // TYPES
 // ============================================================
-type Tab = 'dashboard' | 'generator' | 'puns' | 'projects' | 'calendar' | 'prompts';
+type Tab = 'dashboard' | 'generator' | 'design' | 'studio' | 'puns' | 'projects' | 'calendar' | 'prompts';
 
 interface ProjectData {
   id: string; name: string; description: string; niche: string; color: string;
@@ -69,17 +74,28 @@ interface StatsData {
 // MAIN APP COMPONENT
 // ============================================================
 export default function App() {
+  const t = useTranslations('App');
+  const locale = useLocale();
+  const isEs = locale === 'es';
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [aiEngine, setAiEngine] = useState<'gemini' | 'zai'>('gemini');
   const { toast } = useToast();
 
+  const toggleLanguage = () => {
+    document.cookie = `NEXT_LOCALE=${isEs ? 'en' : 'es'}; path=/`;
+    window.location.reload();
+  };
+
   const navItems: { id: Tab; label: string; icon: React.ReactNode }[] = [
-    { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="h-5 w-5" /> },
-    { id: 'generator', label: 'Prompt Generator', icon: <Wand2 className="h-5 w-5" /> },
-    { id: 'puns', label: 'PUNS', icon: <MessageSquareText className="h-5 w-5" /> },
-    { id: 'projects', label: 'Projects', icon: <FolderKanban className="h-5 w-5" /> },
-    { id: 'calendar', label: 'Calendar', icon: <Calendar className="h-5 w-5" /> },
-    { id: 'prompts', label: 'My Prompts', icon: <BookOpen className="h-5 w-5" /> },
+    { id: 'dashboard', label: t('nav.dashboard'), icon: <LayoutDashboard className="h-5 w-5" /> },
+    { id: 'generator', label: t('nav.generator'), icon: <Wand2 className="h-5 w-5" /> },
+    { id: 'design', label: 'Design Wizard', icon: <Paintbrush className="h-5 w-5" /> },
+    { id: 'studio', label: 'Image Studio', icon: <ImageIcon className="h-5 w-5" /> },
+    { id: 'puns', label: t('nav.puns'), icon: <MessageSquareText className="h-5 w-5" /> },
+    { id: 'projects', label: t('nav.projects'), icon: <FolderKanban className="h-5 w-5" /> },
+    { id: 'calendar', label: t('nav.calendar'), icon: <Calendar className="h-5 w-5" /> },
+    { id: 'prompts', label: t('nav.prompts'), icon: <BookOpen className="h-5 w-5" /> },
   ];
 
   const handleNavClick = (tab: Tab) => {
@@ -98,8 +114,8 @@ export default function App() {
                 <Sparkles className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h1 className="text-lg font-bold">PromptForge</h1>
-                <p className="text-xs text-gray-400">AI Prompt Generator</p>
+                <h1 className="text-lg font-bold">{t('title')}</h1>
+                <p className="text-xs text-gray-400">{t('subtitle')}</p>
               </div>
             </div>
           </div>
@@ -119,12 +135,29 @@ export default function App() {
               </button>
             ))}
           </nav>
-          <div className="p-4 border-t border-gray-700">
+          <div className="p-4 border-t border-gray-700 space-y-2">
+            <Button
+              onClick={toggleLanguage}
+              variant="outline"
+              className="w-full border-gray-600 text-gray-300 hover:text-white hover:bg-gray-700 bg-transparent"
+            >
+              {t('language')}: {isEs ? 'Español' : 'English'}
+            </Button>
+            <Button
+              onClick={() => setAiEngine(prev => prev === 'gemini' ? 'zai' : 'gemini')}
+              variant="outline"
+              className="w-full border-gray-600 text-gray-300 hover:text-white hover:bg-gray-700 bg-transparent flex justify-between items-center"
+            >
+              <span>AI Engine</span>
+              <span className="text-xs px-2 py-1 bg-gray-700 rounded text-emerald-400 font-semibold">
+                {aiEngine === 'gemini' ? 'Gemini' : 'ZAI'}
+              </span>
+            </Button>
             <Button
               onClick={() => handleNavClick('generator')}
               className="w-full bg-emerald-500 hover:bg-emerald-600 text-white"
             >
-              <Plus className="h-4 w-4 mr-2" /> New Prompt
+              <Plus className="h-4 w-4 mr-2" /> {t('newPrompt')}
             </Button>
           </div>
         </aside>
@@ -149,8 +182,8 @@ export default function App() {
                       <Sparkles className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                      <h1 className="text-lg font-bold">PromptForge</h1>
-                      <p className="text-xs text-gray-400">AI Prompt Generator</p>
+                      <h1 className="text-lg font-bold">{t('title')}</h1>
+                      <p className="text-xs text-gray-400">{t('subtitle')}</p>
                     </div>
                   </div>
                 </div>
@@ -193,8 +226,10 @@ export default function App() {
           {/* Main Content */}
           <main className="flex-1 overflow-y-auto pb-20 md:pb-0">
             {activeTab === 'dashboard' && <DashboardView onNavigate={setActiveTab} />}
-            {activeTab === 'generator' && <PromptGeneratorView />}
-            {activeTab === 'puns' && <PunsGeneratorView onNavigate={setActiveTab} />}
+            {activeTab === 'generator' && <PromptGeneratorView aiEngine={aiEngine} />}
+            {activeTab === 'design' && <DesignWizardView aiEngine={aiEngine} />}
+            {activeTab === 'studio' && <ImageStudioView />}
+            {activeTab === 'puns' && <PunsGeneratorView onNavigate={setActiveTab} aiEngine={aiEngine} />}
             {activeTab === 'projects' && <ProjectsView />}
             {activeTab === 'calendar' && <CalendarView />}
             {activeTab === 'prompts' && <MyPromptsView />}
@@ -209,6 +244,8 @@ export default function App() {
 // DASHBOARD VIEW
 // ============================================================
 function DashboardView({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
+  const t = useTranslations('Dashboard');
+  const tApp = useTranslations('App');
   const [stats, setStats] = useState<StatsData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -234,7 +271,7 @@ function DashboardView({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
   if (loading) {
     return (
       <div className="p-6 space-y-6">
-        <h2 className="text-2xl font-bold text-gray-900">Dashboard</h2>
+        <h2 className="text-2xl font-bold text-gray-900">{t('title')}</h2>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => (
             <Card key={i} className="animate-pulse"><CardContent className="p-6"><div className="h-16 bg-gray-200 rounded" /></CardContent></Card>
@@ -245,30 +282,32 @@ function DashboardView({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
   }
 
   const statCards = [
-    { label: 'Total Prompts', value: stats?.totalPrompts || 0, icon: <Wand2 className="h-5 w-5" />, color: 'bg-emerald-50 text-emerald-600' },
-    { label: 'Total Projects', value: stats?.totalProjects || 0, icon: <FolderKanban className="h-5 w-5" />, color: 'bg-amber-50 text-amber-600' },
-    { label: 'Sessions', value: stats?.totalSessions || 0, icon: <BookOpen className="h-5 w-5" />, color: 'bg-teal-50 text-teal-600' },
-    { label: 'Favorites', value: stats?.favoriteCount || 0, icon: <Heart className="h-5 w-5" />, color: 'bg-rose-50 text-rose-600' },
-    { label: 'This Week', value: stats?.promptsThisWeek || 0, icon: <Calendar className="h-5 w-5" />, color: 'bg-violet-50 text-violet-600' },
-    { label: 'This Month', value: stats?.promptsThisMonth || 0, icon: <Star className="h-5 w-5" />, color: 'bg-orange-50 text-orange-600' },
+    { label: t('totalPrompts'), value: stats?.totalPrompts || 0, icon: <Wand2 className="h-5 w-5" />, color: 'bg-emerald-50 text-emerald-600' },
+    { label: t('totalProjects'), value: stats?.totalProjects || 0, icon: <FolderKanban className="h-5 w-5" />, color: 'bg-amber-50 text-amber-600' },
+    { label: t('sessions'), value: stats?.totalSessions || 0, icon: <BookOpen className="h-5 w-5" />, color: 'bg-teal-50 text-teal-600' },
+    { label: 'Pun Sessions', value: stats?.totalPunSessions || 0, icon: <MessageSquareText className="h-5 w-5" />, color: 'bg-blue-50 text-blue-600' },
+    { label: 'Puns Generated', value: stats?.totalPunsGenerated || 0, icon: <Sparkles className="h-5 w-5" />, color: 'bg-indigo-50 text-indigo-600' },
+    { label: t('favorites'), value: stats?.favoriteCount || 0, icon: <Heart className="h-5 w-5" />, color: 'bg-rose-50 text-rose-600' },
+    { label: t('thisWeek'), value: stats?.promptsThisWeek || 0, icon: <Calendar className="h-5 w-5" />, color: 'bg-violet-50 text-violet-600' },
+    { label: t('thisMonth'), value: stats?.promptsThisMonth || 0, icon: <Star className="h-5 w-5" />, color: 'bg-orange-50 text-orange-600' },
   ];
 
   return (
     <div className="p-4 md:p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-900">Dashboard</h2>
+        <h2 className="text-2xl font-bold text-gray-900">{t('title')}</h2>
         <div className="flex gap-2">
           <Button onClick={() => onNavigate('generator')} className="bg-emerald-500 hover:bg-emerald-600 text-white">
-            <Plus className="h-4 w-4 mr-2" /> New Prompt
+            <Plus className="h-4 w-4 mr-2" /> {tApp('newPrompt')}
           </Button>
           <Button onClick={() => onNavigate('projects')} variant="outline">
-            <FolderKanban className="h-4 w-4 mr-2" /> New Project
+            <FolderKanban className="h-4 w-4 mr-2" /> {t('newProject')}
           </Button>
         </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-4">
         {statCards.map(card => (
           <Card key={card.label} className="hover:shadow-md transition-shadow">
             <CardContent className="p-4">
@@ -286,13 +325,13 @@ function DashboardView({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
         {/* Prompts by Product Chart */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Prompts by Product</CardTitle>
+            <CardTitle className="text-base">{t('promptsByProduct')}</CardTitle>
           </CardHeader>
           <CardContent>
             {(stats?.promptsByProduct?.length || 0) === 0 ? (
               <div className="text-center py-8 text-gray-400">
                 <Wand2 className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                <p className="text-sm">No prompts yet. Create your first one!</p>
+                <p className="text-sm">{t('noPromptsYet')}</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -320,13 +359,13 @@ function DashboardView({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
         {/* Prompts by Niche Chart */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Prompts by Niche</CardTitle>
+            <CardTitle className="text-base">{t('promptsByNiche')}</CardTitle>
           </CardHeader>
           <CardContent>
             {(stats?.promptsByNiche?.length || 0) === 0 ? (
               <div className="text-center py-8 text-gray-400">
                 <Star className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                <p className="text-sm">No niche data yet.</p>
+                <p className="text-sm">{t('noNicheData')}</p>
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-2">
@@ -349,16 +388,16 @@ function DashboardView({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-base">Recent Prompts</CardTitle>
+            <CardTitle className="text-base">{t('recentPrompts')}</CardTitle>
             <Button variant="ghost" size="sm" onClick={() => onNavigate('prompts')}>
-              View All <ChevronRight className="h-4 w-4 ml-1" />
+              {t('viewAll')} <ChevronRight className="h-4 w-4 ml-1" />
             </Button>
           </div>
         </CardHeader>
         <CardContent>
           {(stats?.recentPrompts?.length || 0) === 0 ? (
             <div className="text-center py-6 text-gray-400">
-              <p className="text-sm">No prompts yet. Start generating!</p>
+              <p className="text-sm">{t('startGenerating')}</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -388,7 +427,8 @@ function DashboardView({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
 // ============================================================
 // PROMPT GENERATOR VIEW
 // ============================================================
-function PromptGeneratorView() {
+function PromptGeneratorView({ aiEngine }: { aiEngine: 'gemini' | 'zai' }) {
+  const t = useTranslations('Generator');
   const { toast } = useToast();
   const [step, setStep] = useState(1);
   const [saving, setSaving] = useState(false);
@@ -402,6 +442,7 @@ function PromptGeneratorView() {
     niche: '',
     style: '',
     paletteName: '',
+    garmentTone: 'dark' as 'dark' | 'light' | 'any',
     primaryText: '',
     secondaryText: '',
     accentText: '',
@@ -425,21 +466,22 @@ function PromptGeneratorView() {
   };
   const palette = COLOR_PALETTES[formData.paletteName] || [];
 
-  const totalSteps = 5;
+  const totalSteps = 6;
   const progressPercent = (step / totalSteps) * 100;
 
   const canGoNext = () => {
     switch (step) {
       case 1: return !!formData.product;
       case 2: return !!formData.niche;
-      case 3: return !!formData.style && !!formData.paletteName && !!formData.primaryText;
-      case 4: return true;
+      case 3: return !!formData.style && !!formData.paletteName;
+      case 4: return !!formData.primaryText;
       case 5: return true;
+      case 6: return true;
       default: return false;
     }
   };
 
-  const generatedPrompt = step === 5 ? generatePromptText({
+  const generatedPrompt = step === 6 ? generatePromptText({
     product: formData.product,
     niche: formData.niche,
     style: formData.style,
@@ -451,6 +493,7 @@ function PromptGeneratorView() {
     paletteName: formData.paletteName,
     aiTool: formData.aiTool,
     selectedObjects: formData.selectedObjects,
+    garmentTone: formData.garmentTone,
   }) : '';
 
   const handleCopy = async (text: string) => {
@@ -496,6 +539,7 @@ function PromptGeneratorView() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          aiEngine,
           product: formData.product,
           niche: formData.niche,
           style: formData.style,
@@ -505,6 +549,7 @@ function PromptGeneratorView() {
           fonts: effectiveFonts,
           colors: palette,
           aiTool: formData.aiTool,
+          garmentTone: formData.garmentTone,
         }),
       });
       if (res.ok) {
@@ -533,15 +578,15 @@ function PromptGeneratorView() {
   return (
     <div className="p-4 md:p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-900">Prompt Generator</h2>
-        <Badge variant="outline" className="text-sm">Step {step} of {totalSteps}</Badge>
+        <h2 className="text-2xl font-bold text-gray-900">{t('title')}</h2>
+        <Badge variant="outline" className="text-sm">{t('step', { step, total: totalSteps })}</Badge>
       </div>
 
       {/* Progress Bar */}
       <div className="space-y-2">
         <Progress value={progressPercent} className="h-2" />
         <div className="flex justify-between">
-          {['Product', 'Niche', 'Design', 'Fonts', 'Generate'].map((label, i) => (
+          {[t('steps.product'), t('steps.niche'), 'Estilo & Color', 'Textos', t('steps.fonts'), t('steps.generate')].map((label, i) => (
             <span key={label} className={`text-xs ${step > i + 1 ? 'text-emerald-600 font-medium' : step === i + 1 ? 'text-gray-900 font-medium' : 'text-gray-400'}`}>
               {label}
             </span>
@@ -555,8 +600,8 @@ function PromptGeneratorView() {
           {step === 1 && (
             <div className="space-y-4">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Select Product Type</h3>
-                <p className="text-sm text-gray-500">Choose the product you want to design for</p>
+                <h3 className="text-lg font-semibold text-gray-900">{t('productTitle')}</h3>
+                <p className="text-sm text-gray-500">{t('productDesc')}</p>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
                 {PRODUCTS.map(product => (
@@ -582,8 +627,8 @@ function PromptGeneratorView() {
           {step === 2 && (
             <div className="space-y-4">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Select Niche</h3>
-                <p className="text-sm text-gray-500">Choose your target niche for {formData.product}</p>
+                <h3 className="text-lg font-semibold text-gray-900">{t('nicheTitle')}</h3>
+                <p className="text-sm text-gray-500">{t('nicheDesc', { product: formData.product })}</p>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                 {NICHES.map(niche => (
@@ -603,70 +648,79 @@ function PromptGeneratorView() {
             </div>
           )}
 
-          {/* Step 3: Design Customization */}
+          {/* Step 3: Design Customization — NEW UI */}
           {step === 3 && (
-            <div className="space-y-6">
+            <div className="space-y-4">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Design Customization</h3>
-                <p className="text-sm text-gray-500">Customize the design style, colors, and text</p>
+                <h3 className="text-lg font-semibold text-gray-900">Personaliza el Estilo & Color</h3>
+                <p className="text-sm text-gray-500">Selecciona el estilo visual y la paleta que mejor van con tu nicho y producto.</p>
               </div>
+              <DesignCustomizationStep
+                product={formData.product}
+                niche={formData.niche}
+                selectedStyle={formData.style}
+                selectedPalette={formData.paletteName}
+                garmentTone={formData.garmentTone}
+                aiEngine={aiEngine}
+                onStyleChange={style => setFormData(prev => ({ ...prev, style }))}
+                onPaletteChange={paletteName => setFormData(prev => ({ ...prev, paletteName }))}
+                onGarmentToneChange={garmentTone => setFormData(prev => ({ ...prev, garmentTone }))}
+              />
+            </div>
+          )}
 
-              {/* Style Selection */}
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Design Theme/Style</Label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-                  {DESIGN_STYLES.map(style => (
+          {/* Step 4: Text Inputs — NEW UI */}
+          {step === 4 && (
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">Personaliza los Textos del Diseño</h3>
+                <p className="text-sm text-gray-500">¿Qué dirá tu diseño? La IA te sugerirá frases que funcionan para tu nicho.</p>
+              </div>
+              <TextInputsStep
+                product={formData.product}
+                niche={formData.niche}
+                style={formData.style}
+                palette={formData.paletteName}
+                primaryText={formData.primaryText}
+                secondaryText={formData.secondaryText}
+                accentText={formData.accentText}
+                aiEngine={aiEngine}
+                onPrimaryChange={primaryText => setFormData(prev => ({ ...prev, primaryText }))}
+                onSecondaryChange={secondaryText => setFormData(prev => ({ ...prev, secondaryText }))}
+                onAccentChange={accentText => setFormData(prev => ({ ...prev, accentText }))}
+              />
+
+              {/* AI Tool selection — moved here from old step 3 */}
+              <div className="pt-4 border-t space-y-2">
+                <Label className="text-sm font-medium">{t('aiTool')}</Label>
+                <div className="flex flex-wrap gap-2">
+                  {AI_TOOLS.map(tool => (
                     <button
-                      key={style}
-                      onClick={() => setFormData(prev => ({ ...prev, style }))}
-                      className={`p-3 rounded-lg border text-sm transition-all ${
-                        formData.style === style
+                      key={tool}
+                      onClick={() => setFormData(prev => ({ ...prev, aiTool: tool }))}
+                      className={`px-4 py-2 rounded-lg border text-sm transition-all ${
+                        formData.aiTool === tool
                           ? 'border-emerald-500 bg-emerald-50 text-emerald-700 font-medium'
                           : 'border-gray-200 hover:border-emerald-300 text-gray-600'
                       }`}
                     >
-                      {style}
+                      {tool}
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* Color Palette */}
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Color Palette</Label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-                  {Object.entries(COLOR_PALETTES).map(([name, colors]) => (
-                    <button
-                      key={name}
-                      onClick={() => setFormData(prev => ({ ...prev, paletteName: name }))}
-                      className={`p-3 rounded-lg border-2 transition-all ${
-                        formData.paletteName === name
-                          ? 'border-emerald-500 bg-emerald-50'
-                          : 'border-gray-200 hover:border-emerald-300'
-                      }`}
-                    >
-                      <p className="text-xs font-medium text-gray-700 mb-2">{name}</p>
-                      <div className="flex gap-1">
-                        {colors.map((color, i) => (
-                          <div key={i} className="w-6 h-6 rounded-full border border-gray-200" style={{ backgroundColor: color }} />
-                        ))}
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Object Selection */}
-              <div className="space-y-3">
+              {/* Object selection - compact version */}
+              <div className="space-y-3 pt-2">
                 <div className="flex items-center justify-between">
-                  <Label className="text-sm font-medium">Design Objects</Label>
+                  <Label className="text-sm font-medium">{t('designObjects')}</Label>
                   {formData.selectedObjects.length > 0 && (
                     <Badge variant="secondary" className="text-xs">
-                      {formData.selectedObjects.length} selected
+                      {t('selected', { count: formData.selectedObjects.length })}
                     </Badge>
                   )}
                 </div>
-                <p className="text-xs text-gray-400">Select objects to feature in your design. Your niche category appears first.</p>
+                <p className="text-xs text-gray-400">Objetos a incluir en el diseño (opcional). Tu categoría aparece primero.</p>
                 <div className="space-y-3">
                   {(() => {
                     const sortedCategories = formData.niche
@@ -677,7 +731,7 @@ function PromptGeneratorView() {
                       : OBJECT_CATEGORIES;
                     return sortedCategories.map((category, idx) => {
                       const isPrimary = !!(formData.niche && category.niche === formData.niche);
-                      const isExpanded = expandedCategories.has(category.name) || isPrimary || idx < 3;
+                      const isExpanded = expandedCategories.has(category.name) || isPrimary || idx < 2;
                       return (
                         <div key={category.name} className={`border rounded-lg p-3 ${isPrimary ? 'border-emerald-300 bg-emerald-50/50' : 'bg-gray-50/50'}`}>
                           <div className="flex items-center justify-between mb-2">
@@ -685,7 +739,7 @@ function PromptGeneratorView() {
                               <span className="text-base">{category.icon}</span>
                               <span className="text-sm font-semibold text-gray-700">{category.name}</span>
                               {isPrimary && (
-                                <Badge className="text-[9px] bg-emerald-100 text-emerald-700 border-emerald-200">Recommended</Badge>
+                                <Badge className="text-[9px] bg-emerald-100 text-emerald-700 border-emerald-200">{t('recommended')}</Badge>
                               )}
                             </div>
                             <button
@@ -699,7 +753,7 @@ function PromptGeneratorView() {
                               }}
                               className="text-xs text-gray-400 hover:text-emerald-500"
                             >
-                              {isExpanded ? '− Collapse' : '+ Expand'}
+                              {isExpanded ? t('collapse') : t('expand')}
                             </button>
                           </div>
                           {isExpanded && (
@@ -734,100 +788,25 @@ function PromptGeneratorView() {
                     });
                   })()}
                 </div>
-                {formData.selectedObjects.length > 0 && (
-                  <div className="flex items-center gap-2 pt-1">
-                    <span className="text-xs text-gray-500">Selected:</span>
-                    <div className="flex flex-wrap gap-1">
-                      {formData.selectedObjects.map(obj => (
-                        <Badge key={obj} variant="outline" className="text-[10px] bg-emerald-50 text-emerald-700 border-emerald-200">
-                          {obj}
-                          <button
-                            onClick={() => setFormData(prev => ({
-                              ...prev,
-                              selectedObjects: prev.selectedObjects.filter(o => o !== obj)
-                            }))}
-                            className="ml-1 hover:text-red-500"
-                          >
-                            ×
-                          </button>
-                        </Badge>
-                      ))}
-                    </div>
-                    <button
-                      onClick={() => setFormData(prev => ({ ...prev, selectedObjects: [] }))}
-                      className="text-[10px] text-red-400 hover:text-red-600 ml-1"
-                    >
-                      Clear all
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {/* Text Inputs */}
-              <div className="grid sm:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Primary Text *</Label>
-                  <Input
-                    placeholder="Main message"
-                    value={formData.primaryText}
-                    onChange={e => setFormData(prev => ({ ...prev, primaryText: e.target.value }))}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Secondary Text</Label>
-                  <Input
-                    placeholder="Subtitle/tagline"
-                    value={formData.secondaryText}
-                    onChange={e => setFormData(prev => ({ ...prev, secondaryText: e.target.value }))}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Accent Text</Label>
-                  <Input
-                    placeholder="Date/name/detail"
-                    value={formData.accentText}
-                    onChange={e => setFormData(prev => ({ ...prev, accentText: e.target.value }))}
-                  />
-                </div>
-              </div>
-
-              {/* AI Tool */}
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">AI Tool</Label>
-                <div className="flex flex-wrap gap-2">
-                  {AI_TOOLS.map(tool => (
-                    <button
-                      key={tool}
-                      onClick={() => setFormData(prev => ({ ...prev, aiTool: tool }))}
-                      className={`px-4 py-2 rounded-lg border text-sm transition-all ${
-                        formData.aiTool === tool
-                          ? 'border-emerald-500 bg-emerald-50 text-emerald-700 font-medium'
-                          : 'border-gray-200 hover:border-emerald-300 text-gray-600'
-                      }`}
-                    >
-                      {tool}
-                    </button>
-                  ))}
-                </div>
               </div>
             </div>
           )}
 
-          {/* Step 4: Font Selection */}
-          {step === 4 && (
+          {/* Step 5: Font Selection */}
+          {step === 5 && (
             <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Font Selection</h3>
-                <p className="text-sm text-gray-500">Recommended fonts for {formData.product} + {formData.niche}</p>
+                <h3 className="text-lg font-semibold text-gray-900">{t('fontTitle')}</h3>
+                <p className="text-sm text-gray-500">{t('fontDesc', { product: formData.product, niche: formData.niche })}</p>
               </div>
 
               <div className="grid sm:grid-cols-3 gap-4">
                 <Card className="border-2 border-emerald-200 bg-emerald-50/50">
                   <CardContent className="p-4 space-y-3">
-                    <Label className="text-xs font-semibold text-emerald-700 uppercase tracking-wider">Fuente Principal</Label>
+                    <Label className="text-xs font-semibold text-emerald-700 uppercase tracking-wider">{t('fontPrimary')}</Label>
                     <p className="text-lg font-bold text-gray-900">{fonts.principal}</p>
                     <Input
-                      placeholder="Override font..."
+                      placeholder={t('overrideFont')}
                       value={formData.fontFamilyOverride}
                       onChange={e => setFormData(prev => ({ ...prev, fontFamilyOverride: e.target.value }))}
                       className="text-sm"
@@ -836,10 +815,10 @@ function PromptGeneratorView() {
                 </Card>
                 <Card className="border-2 border-teal-200 bg-teal-50/50">
                   <CardContent className="p-4 space-y-3">
-                    <Label className="text-xs font-semibold text-teal-700 uppercase tracking-wider">Fuente Secundaria</Label>
+                    <Label className="text-xs font-semibold text-teal-700 uppercase tracking-wider">{t('fontSecondary')}</Label>
                     <p className="text-lg font-bold text-gray-900">{fonts.secundaria}</p>
                     <Input
-                      placeholder="Override font..."
+                      placeholder={t('overrideFont')}
                       value={formData.fontSecondaryOverride}
                       onChange={e => setFormData(prev => ({ ...prev, fontSecondaryOverride: e.target.value }))}
                       className="text-sm"
@@ -848,10 +827,10 @@ function PromptGeneratorView() {
                 </Card>
                 <Card className="border-2 border-amber-200 bg-amber-50/50">
                   <CardContent className="p-4 space-y-3">
-                    <Label className="text-xs font-semibold text-amber-700 uppercase tracking-wider">Fuente de Acento</Label>
+                    <Label className="text-xs font-semibold text-amber-700 uppercase tracking-wider">{t('fontAccent')}</Label>
                     <p className="text-lg font-bold text-gray-900">{fonts.acento}</p>
                     <Input
-                      placeholder="Override font..."
+                      placeholder={t('overrideFont')}
                       value={formData.fontAccentOverride}
                       onChange={e => setFormData(prev => ({ ...prev, fontAccentOverride: e.target.value }))}
                       className="text-sm"
@@ -862,9 +841,9 @@ function PromptGeneratorView() {
 
               {/* Save to Project */}
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Save to Project (optional)</Label>
+                <Label className="text-sm font-medium">{t('saveProject')}</Label>
                 <Select value={formData.projectId} onValueChange={v => setFormData(prev => ({ ...prev, projectId: v }))}>
-                  <SelectTrigger><SelectValue placeholder="Select a project..." /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder={t('selectProject')} /></SelectTrigger>
                   <SelectContent>
                     {projects.map(p => (
                       <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
@@ -875,12 +854,12 @@ function PromptGeneratorView() {
             </div>
           )}
 
-          {/* Step 5: Generate Prompt */}
-          {step === 5 && (
+          {/* Step 6: Generate Prompt */}
+          {step === 6 && (
             <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Your Generated Prompt</h3>
-                <p className="text-sm text-gray-500">Review, copy, or enhance your prompt</p>
+                <h3 className="text-lg font-semibold text-gray-900">{t('generateTitle')}</h3>
+                <p className="text-sm text-gray-500">{t('generateDesc')}</p>
               </div>
 
               {/* Summary of selections */}
@@ -908,7 +887,7 @@ function PromptGeneratorView() {
               {/* Prompt Display */}
               <div className="space-y-4">
                 <div className="relative">
-                  <Label className="text-sm font-medium">Template Prompt</Label>
+                  <Label className="text-sm font-medium">{t('templatePrompt')}</Label>
                   <div className="mt-1 p-4 bg-gray-50 rounded-lg border text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
                     {generatedPrompt}
                   </div>
@@ -924,7 +903,7 @@ function PromptGeneratorView() {
                 {aiGeneratedPrompt && (
                   <div className="relative">
                     <Label className="text-sm font-medium flex items-center gap-2">
-                      <Sparkles className="h-4 w-4 text-emerald-500" /> AI-Enhanced Prompt
+                      <Sparkles className="h-4 w-4 text-emerald-500" /> {t('aiEnhancedPrompt')}
                     </Label>
                     <div className="mt-1 p-4 bg-emerald-50 rounded-lg border border-emerald-200 text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
                       {aiGeneratedPrompt}
@@ -943,16 +922,16 @@ function PromptGeneratorView() {
               {/* Action Buttons */}
               <div className="flex flex-wrap gap-3">
                 <Button onClick={() => handleCopy(aiGeneratedPrompt || generatedPrompt)} className="bg-emerald-500 hover:bg-emerald-600 text-white">
-                  <Copy className="h-4 w-4 mr-2" /> Copy Prompt
+                  <Copy className="h-4 w-4 mr-2" /> {t('copyPrompt')}
                 </Button>
                 <Button onClick={handleSave} disabled={saving} variant="outline">
-                  <Star className="h-4 w-4 mr-2" /> {saving ? 'Saving...' : 'Save to Project'}
+                  <Star className="h-4 w-4 mr-2" /> {saving ? t('saving') : t('saveToProject')}
                 </Button>
                 <Button onClick={handleAiRegenerate} disabled={generating} variant="outline" className="border-violet-300 text-violet-600 hover:bg-violet-50">
-                  <Sparkles className="h-4 w-4 mr-2" /> {generating ? 'Generating...' : 'Regenerate with AI'}
+                  <Sparkles className="h-4 w-4 mr-2" /> {generating ? t('generating') : t('regenerateAi')}
                 </Button>
                 <Button onClick={handleReset} variant="ghost">
-                  <RefreshCw className="h-4 w-4 mr-2" /> Generate Another
+                  <RefreshCw className="h-4 w-4 mr-2" /> {t('generateAnother')}
                 </Button>
               </div>
             </div>
@@ -965,7 +944,7 @@ function PromptGeneratorView() {
               onClick={() => setStep(prev => Math.max(1, prev - 1))}
               disabled={step === 1}
             >
-              <ArrowLeft className="h-4 w-4 mr-2" /> Back
+              <ArrowLeft className="h-4 w-4 mr-2" /> {t('back')}
             </Button>
             {step < totalSteps ? (
               <Button
@@ -973,7 +952,7 @@ function PromptGeneratorView() {
                 disabled={!canGoNext()}
                 className="bg-emerald-500 hover:bg-emerald-600 text-white"
               >
-                Next <ArrowRight className="h-4 w-4 ml-2" />
+                {t('next')} <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
             ) : null}
           </div>
@@ -1015,7 +994,8 @@ const PUN_CATEGORIES_META = [
   { icon: "🖱️", name: "MousePad", productKey: "Mousepad", description: "Oficina, gaming, productividad, estrés", count: 2 },
 ];
 
-function PunsGeneratorView({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
+function PunsGeneratorView({ onNavigate, aiEngine }: { onNavigate: (tab: Tab) => void, aiEngine: 'gemini' | 'zai' }) {
+  const t = useTranslations('Puns');
   const { toast } = useToast();
   const [language, setLanguage] = useState('English');
   const [niche, setNiche] = useState('');
@@ -1024,7 +1004,32 @@ function PunsGeneratorView({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
   const [punResults, setPunResults] = useState<PunCategory[]>([]);
   const [error, setError] = useState('');
 
+  const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
+  const [sessionName, setSessionName] = useState('');
+  const [sessions, setSessions] = useState<any[]>([]);
+  const [savingSession, setSavingSession] = useState(false);
+
+  useEffect(() => {
+    fetchSessions();
+  }, []);
+
+  const fetchSessions = async () => {
+    try {
+      const res = await fetch('/api/puns/sessions');
+      if (res.ok) {
+        const data = await res.json();
+        setSessions(data.sessions || []);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const handleGenerate = async () => {
+    if (selectedProducts.length === 0) {
+      toast({ title: 'Select products', description: 'Please select at least one product', variant: 'destructive' });
+      return;
+    }
     const effectiveNiche = customNiche || niche;
     if (!effectiveNiche) {
       toast({ title: 'Select a niche', description: 'Please select or type a niche/theme for your puns', variant: 'destructive' });
@@ -1039,7 +1044,12 @@ function PunsGeneratorView({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
       const res = await fetch('/api/puns', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ language: language, niche: effectiveNiche }),
+        body: JSON.stringify({ 
+          aiEngine, 
+          language: language, 
+          niche: effectiveNiche,
+          selectedProducts: PUN_CATEGORIES_META.filter(p => selectedProducts.includes(p.productKey))
+        }),
       });
 
       if (!res.ok) {
@@ -1074,35 +1084,150 @@ function PunsGeneratorView({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
     toast({ title: 'All Copied!', description: 'All puns copied to clipboard' });
   };
 
+  const handleExportTxt = () => {
+    const allText = punResults.map(cat =>
+      `${cat.icon} ${cat.name}\n${cat.items.map((item, i) => `${i + 1}. ${item}`).join('\n')}`
+    ).join('\n\n');
+    const blob = new Blob([allText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `puns_${niche || 'export'}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleSaveSession = async () => {
+    if (!sessionName) {
+      toast({ title: 'Name required', description: 'Please enter a session name', variant: 'destructive' });
+      return;
+    }
+    setSavingSession(true);
+    try {
+      const flatPuns = punResults.flatMap(cat => cat.items.map(text => ({ content: text, product: cat.productKey })));
+      const res = await fetch('/api/puns/sessions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: sessionName,
+          niche: customNiche || niche,
+          language,
+          products: selectedProducts,
+          puns: flatPuns
+        })
+      });
+      if (res.ok) {
+        toast({ title: 'Success', description: 'Session saved successfully' });
+        setSessionName('');
+        fetchSessions();
+      } else {
+        throw new Error('Failed to save');
+      }
+    } catch (err) {
+      toast({ title: 'Error', description: 'Failed to save session', variant: 'destructive' });
+    } finally {
+      setSavingSession(false);
+    }
+  };
+
+  const handleDeleteSession = async (id: string) => {
+    if (!confirm('Delete this session?')) return;
+    try {
+      const res = await fetch(`/api/puns/sessions/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        toast({ title: 'Deleted', description: 'Session removed' });
+        fetchSessions();
+      }
+    } catch (err) {
+      toast({ title: 'Error', description: 'Failed to delete', variant: 'destructive' });
+    }
+  };
+
+  const handleLoadSession = (session: any) => {
+    const grouped = session.puns.reduce((acc: any, pun: any) => {
+      if (!acc[pun.product]) acc[pun.product] = [];
+      acc[pun.product].push(pun.content);
+      return acc;
+    }, {});
+
+    const reconstructed: PunCategory[] = Object.keys(grouped).map(prodKey => {
+      const meta = PUN_CATEGORIES_META.find(m => m.productKey === prodKey) || PUN_CATEGORIES_META[0];
+      return {
+        icon: meta.icon,
+        name: meta.name,
+        productKey: prodKey,
+        description: meta.description,
+        items: grouped[prodKey]
+      };
+    });
+
+    setPunResults(reconstructed);
+    setNiche(session.niche);
+    setCustomNiche('');
+    setLanguage(session.language);
+    try {
+      const prods = JSON.parse(session.products);
+      if (Array.isArray(prods)) setSelectedProducts(prods);
+    } catch(e) {}
+    toast({ title: 'Loaded', description: `Session ${session.name} loaded` });
+  };
+
   const effectiveNiche = customNiche || niche;
 
   return (
     <div className="p-4 md:p-6 space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
             <MessageSquareText className="h-7 w-7 text-emerald-500" />
-            PUNS Generator
+            {t('title')}
           </h2>
-          <p className="text-sm text-gray-500 mt-1">Juegos de palabras creativos y comerciales para POD</p>
+          <p className="text-sm text-gray-500 mt-1">{t('subtitle')}</p>
         </div>
         {punResults.length > 0 && (
-          <Button onClick={handleCopyAll} variant="outline" className="gap-2">
-            <Copy className="h-4 w-4" /> Copy All
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={handleExportTxt} variant="outline" className="gap-2 text-emerald-600 border-emerald-200 hover:bg-emerald-50">
+              <Download className="h-4 w-4" /> Export TXT
+            </Button>
+            <Button onClick={handleCopyAll} variant="outline" className="gap-2">
+              <Copy className="h-4 w-4" /> {t('copyAll')}
+            </Button>
+          </div>
         )}
       </div>
+
+      {/* Saved Sessions Top Bar */}
+      {sessions.length > 0 && (
+        <Card className="border-gray-200 bg-gray-50">
+          <CardContent className="p-4">
+            <h3 className="text-sm font-bold text-gray-800 mb-3 flex items-center gap-2"><Save className="h-4 w-4" /> Saved Sessions</h3>
+            <div className="flex overflow-x-auto gap-3 pb-2">
+              {sessions.map(s => (
+                <div key={s.id} className="min-w-[200px] border border-emerald-100 bg-white shadow-sm p-3 rounded-lg flex flex-col justify-between">
+                  <div>
+                    <h4 className="font-semibold text-emerald-800 text-sm truncate">{s.name}</h4>
+                    <p className="text-xs text-gray-500 truncate">{s.niche} ({s.language}) - {s.puns?.length || 0} puns</p>
+                  </div>
+                  <div className="flex gap-2 mt-3">
+                    <Button size="sm" variant="outline" className="flex-1 text-xs h-7" onClick={() => handleLoadSession(s)}>Load</Button>
+                    <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-400 hover:text-red-600 hover:bg-red-50" onClick={() => handleDeleteSession(s.id)}>
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* What is a PUN? - Info Card */}
       <Card className="border-emerald-200 bg-gradient-to-r from-emerald-50 to-teal-50">
         <CardContent className="p-5">
-          <h3 className="text-sm font-bold text-emerald-800 mb-2">What is a PUN? - What is a Pun?</h3>
+          <h3 className="text-sm font-bold text-emerald-800 mb-2">{t('whatIsTitle')}</h3>
           <p className="text-xs text-emerald-700 leading-relaxed">
-            A <strong>pun</strong> is a clever wordplay that uses words with similar sounds (homophones) or multiple meanings (polysemy)
-            to create a fun double meaning. In POD, puns are the king of sales because they are short, witty, and create an instant
-            connection with the customer. Examples: <em>&quot;Brew-tiful&quot;</em> (Beautiful), <em>&quot;Espresso Yourself&quot;</em> (Express Yourself),
-            <em>&quot;Java the Hutt&quot;</em> (Jabba the Hutt).
+            Un <strong>pun</strong> (juego de palabras) usa palabras con sonidos similares (homófonos) o múltiples significados para crear un doble sentido divertido. En POD, los puns son los reyes de las ventas porque son cortos, ingeniosos y crean una conexión instantánea con el cliente. Ejemplos: <em>&quot;Brew-tiful&quot;</em> (Beautiful), <em>&quot;Espresso Yourself&quot;</em> (Express Yourself), <em>&quot;Java the Hutt&quot;</em> (Jabba the Hutt).
           </p>
         </CardContent>
       </Card>
@@ -1112,8 +1237,8 @@ function PunsGeneratorView({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
         <CardContent className="p-6 space-y-6">
           {/* Language Selection */}
           <div className="space-y-2">
-            <Label className="text-sm font-medium">1. Language for Puns</Label>
-            <p className="text-xs text-gray-400">Select the language for your wordplay</p>
+            <Label className="text-sm font-medium">{t('step1Title')}</Label>
+            <p className="text-xs text-gray-400">{t('step1Desc')}</p>
             <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
               {PUN_LANGUAGES.map(lang => (
                 <button
@@ -1134,8 +1259,8 @@ function PunsGeneratorView({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
 
           {/* Niche Selection */}
           <div className="space-y-2">
-            <Label className="text-sm font-medium">2. Niche / Theme for Puns</Label>
-            <p className="text-xs text-gray-400">Select a niche or type a custom theme</p>
+            <Label className="text-sm font-medium">{t('step2Title')}</Label>
+            <p className="text-xs text-gray-400">{t('step2Desc')}</p>
             <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-2">
               {NICHES.map(n => (
                 <button
@@ -1153,7 +1278,7 @@ function PunsGeneratorView({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
             </div>
             <div className="flex gap-2 mt-2">
               <Input
-                placeholder="Or type a custom theme... (e.g., Coffee, Nursing, Cats, Gym)"
+                placeholder={t('customThemePlaceholder')}
                 value={customNiche}
                 onChange={e => { setCustomNiche(e.target.value); setNiche(''); }}
                 className="flex-1"
@@ -1161,30 +1286,74 @@ function PunsGeneratorView({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
             </div>
           </div>
 
-          {/* Generate Button */}
-          <div className="flex items-center gap-3">
+          {/* Products Selection */}
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">3. Choose POD Products</Label>
+            <p className="text-xs text-gray-400">Select which products to generate 25 puns for each</p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+              {PUN_CATEGORIES_META.map(p => (
+                <label key={p.productKey} className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition-all ${selectedProducts.includes(p.productKey) ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200 hover:border-emerald-200'}`}>
+                  <input 
+                    type="checkbox" 
+                    className="hidden"
+                    checked={selectedProducts.includes(p.productKey)}
+                    onChange={(e) => {
+                      if (e.target.checked) setSelectedProducts(prev => [...prev, p.productKey]);
+                      else setSelectedProducts(prev => prev.filter(k => k !== p.productKey));
+                    }}
+                  />
+                  <span className="text-lg">{p.icon}</span>
+                  <span className="text-xs font-medium">{p.name}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* Generate Button & Save Input */}
+          <div className="flex flex-col md:flex-row items-center justify-between gap-3 pt-2">
+            {punResults.length > 0 ? (
+                <div className="flex flex-1 items-center gap-2 w-full md:w-auto">
+                  <Input 
+                    placeholder="Name this session..." 
+                    value={sessionName}
+                    onChange={e => setSessionName(e.target.value)}
+                    className="flex-1 min-w-[200px]"
+                  />
+                  <Button 
+                    onClick={handleSaveSession}
+                    disabled={savingSession || !sessionName}
+                    className="bg-emerald-700 hover:bg-emerald-800 text-white whitespace-nowrap"
+                  >
+                    {savingSession ? <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />} Save Session
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex-1 w-full md:w-auto text-left">
+                  {effectiveNiche && (
+                    <span className="text-sm text-gray-500">
+                      {t('forNiche', { niche: effectiveNiche, language: language })}
+                    </span>
+                  )}
+                </div>
+              )}
+
             <Button
               onClick={handleGenerate}
-              disabled={generating || !effectiveNiche}
-              className="bg-emerald-500 hover:bg-emerald-600 text-white px-8"
+              disabled={generating || !effectiveNiche || selectedProducts.length === 0}
+              className="bg-emerald-500 hover:bg-emerald-600 text-white px-8 w-full md:w-auto ml-auto"
             >
               {generating ? (
                 <>
                   <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                  Generating Puns...
+                  {t('generating')}
                 </>
               ) : (
                 <>
                   <Sparkles className="h-4 w-4 mr-2" />
-                  Generate 25 Puns
+                  {t('generateBtn')}
                 </>
               )}
             </Button>
-            {effectiveNiche && (
-              <span className="text-sm text-gray-500">
-                for <strong className="text-gray-700">{effectiveNiche}</strong> in <strong className="text-gray-700">{language}</strong>
-              </span>
-            )}
           </div>
         </CardContent>
       </Card>
@@ -1224,10 +1393,10 @@ function PunsGeneratorView({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold text-gray-900">
-              Results: 25 Puns for &quot;{effectiveNiche}&quot; in {language}
+              {t('resultsTitle', { niche: effectiveNiche, language: language })}
             </h3>
             <Badge variant="secondary" className="text-xs">
-              {punResults.reduce((sum, cat) => sum + cat.items.length, 0)} puns
+              {t('punsCount', { count: punResults.reduce((sum, cat) => sum + cat.items.length, 0) })}
             </Badge>
           </div>
 
@@ -1268,8 +1437,8 @@ function PunsGeneratorView({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
             <CardContent className="p-5">
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="text-sm font-semibold text-emerald-800">Use these puns in your designs</h4>
-                  <p className="text-xs text-emerald-600 mt-1">Go to the Prompt Generator and use these puns as your Primary Text to create stunning designs</p>
+                  <h4 className="text-sm font-semibold text-emerald-800">{t('usePunsTitle')}</h4>
+                  <p className="text-xs text-emerald-600 mt-1">{t('usePunsDesc')}</p>
                 </div>
                 <Button
                   onClick={() => {
@@ -1277,7 +1446,7 @@ function PunsGeneratorView({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
                   }}
                   className="bg-emerald-500 hover:bg-emerald-600 text-white"
                 >
-                  <Wand2 className="h-4 w-4 mr-2" /> Go to Generator
+                  <Wand2 className="h-4 w-4 mr-2" /> {t('goToGenerator')}
                 </Button>
               </div>
             </CardContent>
@@ -1292,6 +1461,7 @@ function PunsGeneratorView({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
 // PROJECTS VIEW
 // ============================================================
 function ProjectsView() {
+  const t = useTranslations('Projects');
   const { toast } = useToast();
   const [projects, setProjects] = useState<ProjectData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -1302,6 +1472,14 @@ function ProjectsView() {
   const [editingSession, setEditingSession] = useState<SessionData | null>(null);
   const [form, setForm] = useState({ name: '', description: '', niche: '', color: '#10B981' });
   const [sessionForm, setSessionForm] = useState({ name: '' });
+  const [expandedPrompts, setExpandedPrompts] = useState<Set<string>>(new Set());
+
+  const toggleExpand = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const next = new Set(expandedPrompts);
+    if (next.has(id)) next.delete(id); else next.add(id);
+    setExpandedPrompts(next);
+  };
 
   const fetchProjects = useCallback(async () => {
     try {
@@ -1406,7 +1584,7 @@ function ProjectsView() {
       <div className="p-4 md:p-6 space-y-6">
         <div className="flex items-center gap-3">
           <Button variant="ghost" onClick={() => setSelectedProject(null)}>
-            <ArrowLeft className="h-4 w-4 mr-2" /> Back
+            <ArrowLeft className="h-4 w-4 mr-2" /> {t('back')}
           </Button>
           <div className="w-4 h-4 rounded-full" style={{ backgroundColor: selectedProject.color }} />
           <h2 className="text-xl font-bold text-gray-900">{selectedProject.name}</h2>
@@ -1417,21 +1595,21 @@ function ProjectsView() {
         {/* Sessions */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-base">Sessions</CardTitle>
+            <CardTitle className="text-base">{t('sessionsTitle')}</CardTitle>
             <Button size="sm" onClick={() => { setEditingSession(null); setSessionForm({ name: '' }); setShowSessionDialog(true); }}>
-              <Plus className="h-4 w-4 mr-1" /> Add Session
+              <Plus className="h-4 w-4 mr-1" /> {t('addSession')}
             </Button>
           </CardHeader>
           <CardContent>
             {selectedProject.sessions?.length === 0 ? (
-              <p className="text-sm text-gray-400 text-center py-4">No sessions yet</p>
+              <p className="text-sm text-gray-400 text-center py-4">{t('noSessions')}</p>
             ) : (
               <div className="space-y-2">
                 {selectedProject.sessions?.map(session => (
                   <div key={session.id} className="flex items-center justify-between p-3 rounded-lg bg-gray-50">
                     <div>
                       <p className="text-sm font-medium">{session.name}</p>
-                      <p className="text-xs text-gray-400">{session._count?.prompts || 0} prompts</p>
+                      <p className="text-xs text-gray-400">{t('promptsCount', { count: session._count?.prompts || 0 })}</p>
                     </div>
                     <div className="flex gap-1">
                       <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => { setEditingSession(session); setSessionForm({ name: session.name }); setShowSessionDialog(true); }}>
@@ -1442,10 +1620,10 @@ function ProjectsView() {
                           <Button variant="ghost" size="icon" className="h-8 w-8 text-rose-500"><Trash2 className="h-3.5 w-3.5" /></Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent>
-                          <AlertDialogHeader><AlertDialogTitle>Delete Session?</AlertDialogTitle>
-                            <AlertDialogDescription>This will delete &quot;{session.name}&quot; and all its prompts.</AlertDialogDescription></AlertDialogHeader>
-                          <AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDeleteSession(session.id)}>Delete</AlertDialogAction></AlertDialogFooter>
+                          <AlertDialogHeader><AlertDialogTitle>{t('deleteSession')}</AlertDialogTitle>
+                            <AlertDialogDescription>{t('deleteSessionDesc', { name: session.name })}</AlertDialogDescription></AlertDialogHeader>
+                          <AlertDialogFooter><AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDeleteSession(session.id)}>{t('delete')}</AlertDialogAction></AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>
                     </div>
@@ -1458,16 +1636,22 @@ function ProjectsView() {
 
         {/* Project Prompts */}
         <Card>
-          <CardHeader><CardTitle className="text-base">Prompts ({selectedProject.prompts?.length || 0})</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base">{t('promptsTitle', { count: selectedProject.prompts?.length || 0 })}</CardTitle></CardHeader>
           <CardContent>
             {selectedProject.prompts?.length === 0 ? (
-              <p className="text-sm text-gray-400 text-center py-4">No prompts in this project</p>
+              <p className="text-sm text-gray-400 text-center py-4">{t('noPrompts')}</p>
             ) : (
               <div className="space-y-2">
                 {selectedProject.prompts?.map(prompt => (
                   <div key={prompt.id} className="p-3 rounded-lg bg-gray-50">
                     <p className="text-sm font-medium text-gray-900">{prompt.title}</p>
-                    <p className="text-xs text-gray-500 mt-1 line-clamp-2">{prompt.content}</p>
+                    <p 
+                      className={`text-xs text-gray-500 mt-1 cursor-pointer hover:text-gray-700 transition-all ${expandedPrompts.has(prompt.id) ? 'whitespace-pre-wrap' : 'line-clamp-2'}`}
+                      onClick={(e) => toggleExpand(prompt.id, e)}
+                      title="Click to expand/collapse"
+                    >
+                      {prompt.content}
+                    </p>
                     <div className="flex gap-2 mt-2">
                       <Badge variant="outline" className="text-[10px]">{prompt.product}</Badge>
                       <Badge variant="outline" className="text-[10px]">{prompt.niche}</Badge>
@@ -1483,18 +1667,18 @@ function ProjectsView() {
         <Dialog open={showSessionDialog} onOpenChange={setShowSessionDialog}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>{editingSession ? 'Edit Session' : 'New Session'}</DialogTitle>
+              <DialogTitle>{editingSession ? t('editSession') : t('newSession')}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label>Session Name</Label>
-                <Input value={sessionForm.name} onChange={e => setSessionForm({ name: e.target.value })} placeholder="Session name..." />
+                <Label>{t('sessionName')}</Label>
+                <Input value={sessionForm.name} onChange={e => setSessionForm({ name: e.target.value })} placeholder={t('sessionNamePlaceholder')} />
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setShowSessionDialog(false)}>Cancel</Button>
+              <Button variant="outline" onClick={() => setShowSessionDialog(false)}>{t('cancel')}</Button>
               <Button onClick={handleSaveSession} disabled={!sessionForm.name} className="bg-emerald-500 hover:bg-emerald-600 text-white">
-                {editingSession ? 'Update' : 'Create'}
+                {editingSession ? t('update') : t('create')}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -1507,9 +1691,9 @@ function ProjectsView() {
   return (
     <div className="p-4 md:p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-900">Projects</h2>
+        <h2 className="text-2xl font-bold text-gray-900">{t('title')}</h2>
         <Button onClick={openNewProjectDialog} className="bg-emerald-500 hover:bg-emerald-600 text-white">
-          <Plus className="h-4 w-4 mr-2" /> New Project
+          <Plus className="h-4 w-4 mr-2" /> {t('newProject')}
         </Button>
       </div>
 
@@ -1517,10 +1701,10 @@ function ProjectsView() {
         <Card>
           <CardContent className="py-16 text-center">
             <FolderKanban className="h-16 w-16 mx-auto text-gray-300 mb-4" />
-            <h3 className="text-lg font-medium text-gray-600">No projects yet</h3>
-            <p className="text-sm text-gray-400 mt-1">Create your first project to organize your prompts</p>
+            <h3 className="text-lg font-medium text-gray-600">{t('noProjects')}</h3>
+            <p className="text-sm text-gray-400 mt-1">{t('noProjectsDesc')}</p>
             <Button onClick={openNewProjectDialog} className="mt-4 bg-emerald-500 hover:bg-emerald-600 text-white">
-              <Plus className="h-4 w-4 mr-2" /> Create Project
+              <Plus className="h-4 w-4 mr-2" /> {t('createProject')}
             </Button>
           </CardContent>
         </Card>
@@ -1540,20 +1724,20 @@ function ProjectsView() {
                     </div>
                   </div>
                   <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onClick={e => e.stopPropagation()}>
-                    <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEditProjectDialog(project)}><Edit3 className="h-3.5 w-3.5" /></Button></TooltipTrigger><TooltipContent>Edit</TooltipContent></Tooltip>
+                    <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEditProjectDialog(project)}><Edit3 className="h-3.5 w-3.5" /></Button></TooltipTrigger><TooltipContent>{t('editProject')}</TooltipContent></Tooltip>
                     <AlertDialog>
                       <AlertDialogTrigger asChild><Button variant="ghost" size="icon" className="h-8 w-8 text-rose-500"><Trash2 className="h-3.5 w-3.5" /></Button></AlertDialogTrigger>
                       <AlertDialogContent>
-                        <AlertDialogHeader><AlertDialogTitle>Delete Project?</AlertDialogTitle><AlertDialogDescription>This will delete &quot;{project.name}&quot; and all its data.</AlertDialogDescription></AlertDialogHeader>
-                        <AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={() => handleDeleteProject(project.id)}>Delete</AlertDialogAction></AlertDialogFooter>
+                        <AlertDialogHeader><AlertDialogTitle>{t('deleteProject')}</AlertDialogTitle><AlertDialogDescription>{t('deleteProjectDesc', { name: project.name })}</AlertDialogDescription></AlertDialogHeader>
+                        <AlertDialogFooter><AlertDialogCancel>{t('cancel')}</AlertDialogCancel><AlertDialogAction onClick={() => handleDeleteProject(project.id)}>{t('delete')}</AlertDialogAction></AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>
                   </div>
                 </div>
                 {project.description && <p className="text-sm text-gray-500 mt-3 line-clamp-2">{project.description}</p>}
                 <div className="flex gap-4 mt-3 text-xs text-gray-400">
-                  <span>{project._count?.prompts || 0} prompts</span>
-                  <span>{project._count?.sessions || 0} sessions</span>
+                  <span>{t('promptsCount', { count: project._count?.prompts || 0 })}</span>
+                  <span>{t('sessionsCount', { count: project._count?.sessions || 0 })}</span>
                 </div>
               </CardContent>
             </Card>
@@ -1565,29 +1749,29 @@ function ProjectsView() {
       <Dialog open={showProjectDialog} onOpenChange={setShowProjectDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{editingProject ? 'Edit Project' : 'New Project'}</DialogTitle>
-            <DialogDescription>{editingProject ? 'Update project details' : 'Create a new project to organize your prompts'}</DialogDescription>
+            <DialogTitle>{editingProject ? t('editProject') : t('newProject')}</DialogTitle>
+            <DialogDescription>{editingProject ? t('updateDesc') : t('createDesc')}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label>Project Name *</Label>
-              <Input value={form.name} onChange={e => setForm(prev => ({ ...prev, name: e.target.value }))} placeholder="My project..." />
+              <Label>{t('projectName')}</Label>
+              <Input value={form.name} onChange={e => setForm(prev => ({ ...prev, name: e.target.value }))} placeholder={t('projectNamePlaceholder')} />
             </div>
             <div className="space-y-2">
-              <Label>Description</Label>
-              <Textarea value={form.description} onChange={e => setForm(prev => ({ ...prev, description: e.target.value }))} placeholder="Project description..." />
+              <Label>{t('description')}</Label>
+              <Textarea value={form.description} onChange={e => setForm(prev => ({ ...prev, description: e.target.value }))} placeholder={t('descriptionPlaceholder')} />
             </div>
             <div className="space-y-2">
-              <Label>Niche</Label>
+              <Label>{t('niche')}</Label>
               <Select value={form.niche} onValueChange={v => setForm(prev => ({ ...prev, niche: v }))}>
-                <SelectTrigger><SelectValue placeholder="Select niche..." /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder={t('selectNiche')} /></SelectTrigger>
                 <SelectContent>
                   {NICHES.map(n => <SelectItem key={n} value={n}>{n}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Color</Label>
+              <Label>{t('color')}</Label>
               <div className="flex gap-2">
                 {['#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#06B6D4', '#F97316', '#84CC16'].map(c => (
                   <button key={c} className={`w-8 h-8 rounded-full border-2 transition-all ${form.color === c ? 'border-gray-900 scale-110' : 'border-gray-200'}`}
@@ -1597,9 +1781,9 @@ function ProjectsView() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowProjectDialog(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setShowProjectDialog(false)}>{t('cancel')}</Button>
             <Button onClick={handleSaveProject} disabled={!form.name} className="bg-emerald-500 hover:bg-emerald-600 text-white">
-              {editingProject ? 'Update' : 'Create'}
+              {editingProject ? t('update') : t('create')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -1819,6 +2003,14 @@ function MyPromptsView() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [editingPrompt, setEditingPrompt] = useState<PromptData | null>(null);
   const [editForm, setEditForm] = useState({ title: '', content: '' });
+  const [expandedPrompts, setExpandedPrompts] = useState<Set<string>>(new Set());
+
+  const toggleExpand = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const next = new Set(expandedPrompts);
+    if (next.has(id)) next.delete(id); else next.add(id);
+    setExpandedPrompts(next);
+  };
 
   const fetchPrompts = useCallback(async () => {
     try {
@@ -2053,7 +2245,13 @@ function MyPromptsView() {
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
                         <h4 className="font-medium text-gray-900 truncate">{prompt.title}</h4>
-                        <p className="text-sm text-gray-500 mt-1 line-clamp-2">{prompt.content}</p>
+                        <p 
+                          className={`text-sm text-gray-500 mt-1 cursor-pointer hover:text-gray-700 transition-all ${expandedPrompts.has(prompt.id) ? 'whitespace-pre-wrap' : 'line-clamp-2'}`}
+                          onClick={(e) => toggleExpand(prompt.id, e)}
+                          title="Click to expand/collapse"
+                        >
+                          {prompt.content}
+                        </p>
                       </div>
                       <div className="flex items-center gap-1 shrink-0">
                         <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleToggleFavorite(prompt)}>

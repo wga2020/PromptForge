@@ -35,18 +35,26 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages, getLocale } from 'next-intl/server';
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
         suppressHydrationWarning
       >
-        {children}
+        <NextIntlClientProvider messages={messages} locale={locale}>
+          {children}
+        </NextIntlClientProvider>
         <Toaster />
       </body>
     </html>
