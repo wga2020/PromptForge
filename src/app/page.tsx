@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import {
   LayoutDashboard, Wand2, FolderKanban, Calendar, BookOpen,
   Plus, Trash2, Edit3, Copy, Heart, Star, ChevronRight,
@@ -105,7 +106,7 @@ export default function App() {
 
   return (
     <TooltipProvider>
-      <div className="flex h-screen bg-gray-50 overflow-hidden">
+      <div className="flex h-screen bg-background text-foreground overflow-hidden">
         {/* Desktop Sidebar */}
         <aside className="hidden md:flex md:w-64 md:flex-col bg-gradient-to-b from-gray-900 to-gray-800 text-white">
           <div className="p-6 border-b border-gray-700">
@@ -135,7 +136,11 @@ export default function App() {
               </button>
             ))}
           </nav>
-          <div className="p-4 border-t border-gray-700 space-y-2">
+          <div className="p-4 border-t border-gray-700 space-y-3">
+            <div className="flex items-center justify-between px-1">
+              <span className="text-sm text-gray-300 font-medium">Theme</span>
+              <ThemeToggle />
+            </div>
             <Button
               onClick={toggleLanguage}
               variant="outline"
@@ -164,57 +169,60 @@ export default function App() {
 
         {/* Mobile Header + Sheet */}
         <div className="flex-1 flex flex-col overflow-hidden">
-          <header className="md:hidden flex items-center justify-between p-4 bg-white border-b shadow-sm">
+          <header className="md:hidden flex items-center justify-between p-4 bg-card border-b border-border shadow-sm">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center">
                 <Sparkles className="h-4 w-4 text-white" />
               </div>
-              <h1 className="text-lg font-bold text-gray-900">PromptForge</h1>
+              <h1 className="text-lg font-bold text-foreground">PromptForge</h1>
             </div>
-            <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon"><Menu className="h-5 w-5" /></Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="w-72 p-0 bg-gray-900 text-white border-gray-700">
-                <div className="p-6 border-b border-gray-700">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center">
-                      <Sparkles className="h-6 w-6 text-white" />
-                    </div>
-                    <div>
-                      <h1 className="text-lg font-bold">{t('title')}</h1>
-                      <p className="text-xs text-gray-400">{t('subtitle')}</p>
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon"><Menu className="h-5 w-5 text-foreground" /></Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-72 p-0 bg-gray-900 text-white border-gray-700">
+                  <div className="p-6 border-b border-gray-700">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center">
+                        <Sparkles className="h-6 w-6 text-white" />
+                      </div>
+                      <div>
+                        <h1 className="text-lg font-bold">{t('title')}</h1>
+                        <p className="text-xs text-gray-400">{t('subtitle')}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <nav className="p-4 space-y-1">
-                  {navItems.map(item => (
-                    <button
-                      key={item.id}
-                      onClick={() => handleNavClick(item.id)}
-                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${
-                        activeTab === item.id
-                          ? 'bg-emerald-600 text-white'
-                          : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-                      }`}
-                    >
-                      {item.icon}
-                      {item.label}
-                    </button>
-                  ))}
-                </nav>
-              </SheetContent>
-            </Sheet>
+                  <nav className="p-4 space-y-1">
+                    {navItems.map(item => (
+                      <button
+                        key={item.id}
+                        onClick={() => handleNavClick(item.id)}
+                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+                          activeTab === item.id
+                            ? 'bg-emerald-600 text-white'
+                            : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                        }`}
+                      >
+                        {item.icon}
+                        {item.label}
+                      </button>
+                    ))}
+                  </nav>
+                </SheetContent>
+              </Sheet>
+            </div>
           </header>
 
           {/* Mobile Bottom Nav */}
-          <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around z-50">
+          <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border flex justify-around z-50">
             {navItems.map(item => (
               <button
                 key={item.id}
                 onClick={() => handleNavClick(item.id)}
                 className={`flex flex-col items-center py-2 px-3 text-xs transition-colors ${
-                  activeTab === item.id ? 'text-emerald-600' : 'text-gray-500'
+                  activeTab === item.id ? 'text-emerald-600' : 'text-muted-foreground'
                 }`}
               >
                 {item.icon}
@@ -271,10 +279,10 @@ function DashboardView({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
   if (loading) {
     return (
       <div className="p-6 space-y-6">
-        <h2 className="text-2xl font-bold text-gray-900">{t('title')}</h2>
+        <h2 className="text-2xl font-bold text-foreground">{t('title')}</h2>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => (
-            <Card key={i} className="animate-pulse"><CardContent className="p-6"><div className="h-16 bg-gray-200 rounded" /></CardContent></Card>
+            <Card key={i} className="animate-pulse"><CardContent className="p-6"><div className="h-16 bg-muted rounded" /></CardContent></Card>
           ))}
         </div>
       </div>
@@ -282,20 +290,20 @@ function DashboardView({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
   }
 
   const statCards = [
-    { label: t('totalPrompts'), value: stats?.totalPrompts || 0, icon: <Wand2 className="h-5 w-5" />, color: 'bg-emerald-50 text-emerald-600' },
-    { label: t('totalProjects'), value: stats?.totalProjects || 0, icon: <FolderKanban className="h-5 w-5" />, color: 'bg-amber-50 text-amber-600' },
-    { label: t('sessions'), value: stats?.totalSessions || 0, icon: <BookOpen className="h-5 w-5" />, color: 'bg-teal-50 text-teal-600' },
-    { label: 'Pun Sessions', value: stats?.totalPunSessions || 0, icon: <MessageSquareText className="h-5 w-5" />, color: 'bg-blue-50 text-blue-600' },
-    { label: 'Puns Generated', value: stats?.totalPunsGenerated || 0, icon: <Sparkles className="h-5 w-5" />, color: 'bg-indigo-50 text-indigo-600' },
-    { label: t('favorites'), value: stats?.favoriteCount || 0, icon: <Heart className="h-5 w-5" />, color: 'bg-rose-50 text-rose-600' },
-    { label: t('thisWeek'), value: stats?.promptsThisWeek || 0, icon: <Calendar className="h-5 w-5" />, color: 'bg-violet-50 text-violet-600' },
-    { label: t('thisMonth'), value: stats?.promptsThisMonth || 0, icon: <Star className="h-5 w-5" />, color: 'bg-orange-50 text-orange-600' },
+    { label: t('totalPrompts'), value: stats?.totalPrompts || 0, icon: <Wand2 className="h-5 w-5" />, color: 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400' },
+    { label: t('totalProjects'), value: stats?.totalProjects || 0, icon: <FolderKanban className="h-5 w-5" />, color: 'bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400' },
+    { label: t('sessions'), value: stats?.totalSessions || 0, icon: <BookOpen className="h-5 w-5" />, color: 'bg-teal-50 dark:bg-teal-950/30 text-teal-600 dark:text-teal-400' },
+    { label: 'Pun Sessions', value: stats?.totalPunSessions || 0, icon: <MessageSquareText className="h-5 w-5" />, color: 'bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400' },
+    { label: 'Puns Generated', value: stats?.totalPunsGenerated || 0, icon: <Sparkles className="h-5 w-5" />, color: 'bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400' },
+    { label: t('favorites'), value: stats?.favoriteCount || 0, icon: <Heart className="h-5 w-5" />, color: 'bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400' },
+    { label: t('thisWeek'), value: stats?.promptsThisWeek || 0, icon: <Calendar className="h-5 w-5" />, color: 'bg-violet-50 dark:bg-violet-950/30 text-violet-600 dark:text-violet-400' },
+    { label: t('thisMonth'), value: stats?.promptsThisMonth || 0, icon: <Star className="h-5 w-5" />, color: 'bg-orange-50 dark:bg-orange-950/30 text-orange-600 dark:text-orange-400' },
   ];
 
   return (
     <div className="p-4 md:p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-900">{t('title')}</h2>
+        <h2 className="text-2xl font-bold text-foreground">{t('title')}</h2>
         <div className="flex gap-2">
           <Button onClick={() => onNavigate('generator')} className="bg-emerald-500 hover:bg-emerald-600 text-white">
             <Plus className="h-4 w-4 mr-2" /> {tApp('newPrompt')}
@@ -309,13 +317,13 @@ function DashboardView({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
       {/* Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-4">
         {statCards.map(card => (
-          <Card key={card.label} className="hover:shadow-md transition-shadow">
+          <Card key={card.label} className="hover:shadow-md transition-shadow bg-card border-border">
             <CardContent className="p-4">
               <div className={`w-10 h-10 rounded-lg ${card.color} flex items-center justify-center mb-3`}>
                 {card.icon}
               </div>
-              <p className="text-2xl font-bold text-gray-900">{card.value}</p>
-              <p className="text-xs text-gray-500">{card.label}</p>
+              <p className="text-2xl font-bold text-foreground">{card.value}</p>
+              <p className="text-xs text-muted-foreground">{card.label}</p>
             </CardContent>
           </Card>
         ))}
@@ -323,14 +331,14 @@ function DashboardView({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
 
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Prompts by Product Chart */}
-        <Card>
+        <Card className="bg-card border-border">
           <CardHeader>
-            <CardTitle className="text-base">{t('promptsByProduct')}</CardTitle>
+            <CardTitle className="text-base text-foreground">{t('promptsByProduct')}</CardTitle>
           </CardHeader>
           <CardContent>
             {(stats?.promptsByProduct?.length || 0) === 0 ? (
-              <div className="text-center py-8 text-gray-400">
-                <Wand2 className="h-12 w-12 mx-auto mb-2 opacity-50" />
+              <div className="text-center py-8 text-muted-foreground">
+                <Wand2 className="h-12 w-12 mx-auto mb-2 opacity-55" />
                 <p className="text-sm">{t('noPromptsYet')}</p>
               </div>
             ) : (
@@ -341,8 +349,8 @@ function DashboardView({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
                   const colors = ['bg-emerald-500', 'bg-teal-500', 'bg-amber-500', 'bg-rose-500', 'bg-violet-500', 'bg-orange-500', 'bg-cyan-500', 'bg-lime-500'];
                   return (
                     <div key={item.name} className="flex items-center gap-3">
-                      <span className="text-xs font-medium text-gray-600 w-28 truncate">{item.name}</span>
-                      <div className="flex-1 bg-gray-100 rounded-full h-6 overflow-hidden">
+                      <span className="text-xs font-medium text-muted-foreground w-28 truncate">{item.name}</span>
+                      <div className="flex-1 bg-muted rounded-full h-6 overflow-hidden">
                         <div className={`${colors[i % colors.length]} h-full rounded-full flex items-center justify-end pr-2 transition-all duration-500`}
                           style={{ width: `${Math.max(percentage, 15)}%` }}>
                           <span className="text-[10px] font-bold text-white">{item.count}</span>
@@ -357,20 +365,31 @@ function DashboardView({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
         </Card>
 
         {/* Prompts by Niche Chart */}
-        <Card>
+        <Card className="bg-card border-border">
           <CardHeader>
-            <CardTitle className="text-base">{t('promptsByNiche')}</CardTitle>
+            <CardTitle className="text-base text-foreground">{t('promptsByNiche')}</CardTitle>
           </CardHeader>
           <CardContent>
             {(stats?.promptsByNiche?.length || 0) === 0 ? (
-              <div className="text-center py-8 text-gray-400">
-                <Star className="h-12 w-12 mx-auto mb-2 opacity-50" />
+              <div className="text-center py-8 text-muted-foreground">
+                <Star className="h-12 w-12 mx-auto mb-2 opacity-55" />
                 <p className="text-sm">{t('noNicheData')}</p>
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-2">
                 {stats?.promptsByNiche?.slice(0, 10).map((item, i) => {
-                  const colors = ['bg-emerald-100 text-emerald-700', 'bg-teal-100 text-teal-700', 'bg-amber-100 text-amber-700', 'bg-rose-100 text-rose-700', 'bg-violet-100 text-violet-700', 'bg-orange-100 text-orange-700', 'bg-cyan-100 text-cyan-700', 'bg-lime-100 text-lime-700', 'bg-pink-100 text-pink-700', 'bg-sky-100 text-sky-700'];
+                  const colors = [
+                    'bg-emerald-100 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400',
+                    'bg-teal-100 dark:bg-teal-950/30 text-teal-700 dark:text-teal-400',
+                    'bg-amber-100 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400',
+                    'bg-rose-100 dark:bg-rose-950/30 text-rose-700 dark:text-rose-400',
+                    'bg-violet-100 dark:bg-violet-950/30 text-violet-700 dark:text-violet-400',
+                    'bg-orange-100 dark:bg-orange-950/30 text-orange-700 dark:text-orange-400',
+                    'bg-cyan-100 dark:bg-cyan-950/30 text-cyan-700 dark:text-cyan-400',
+                    'bg-lime-100 dark:bg-lime-950/30 text-lime-700 dark:text-lime-400',
+                    'bg-pink-100 dark:bg-pink-950/30 text-pink-700 dark:text-pink-400',
+                    'bg-sky-100 dark:bg-sky-950/30 text-sky-700 dark:text-sky-400'
+                  ];
                   return (
                     <div key={item.name} className={`rounded-lg p-2 text-center ${colors[i % colors.length]}`}>
                       <p className="text-xs font-medium truncate">{item.name}</p>
@@ -385,34 +404,34 @@ function DashboardView({ onNavigate }: { onNavigate: (tab: Tab) => void }) {
       </div>
 
       {/* Recent Prompts */}
-      <Card>
+      <Card className="bg-card border-border">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-base">{t('recentPrompts')}</CardTitle>
-            <Button variant="ghost" size="sm" onClick={() => onNavigate('prompts')}>
+            <CardTitle className="text-base text-foreground">{t('recentPrompts')}</CardTitle>
+            <Button variant="ghost" size="sm" onClick={() => onNavigate('prompts')} className="text-muted-foreground hover:text-foreground">
               {t('viewAll')} <ChevronRight className="h-4 w-4 ml-1" />
             </Button>
           </div>
         </CardHeader>
         <CardContent>
           {(stats?.recentPrompts?.length || 0) === 0 ? (
-            <div className="text-center py-6 text-gray-400">
+            <div className="text-center py-6 text-muted-foreground">
               <p className="text-sm">{t('startGenerating')}</p>
             </div>
           ) : (
             <div className="space-y-3">
               {stats?.recentPrompts?.map(prompt => (
-                <div key={prompt.id} className="flex items-center justify-between p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
+                <div key={prompt.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/40 hover:bg-muted/70 transition-colors border border-border/50">
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">{prompt.title}</p>
+                    <p className="text-sm font-medium text-foreground truncate">{prompt.title}</p>
                     <div className="flex gap-2 mt-1">
-                      <Badge variant="outline" className="text-[10px]">{prompt.product}</Badge>
-                      <Badge variant="outline" className="text-[10px]">{prompt.niche}</Badge>
+                      <Badge variant="outline" className="text-[10px] text-muted-foreground border-border">{prompt.product}</Badge>
+                      <Badge variant="outline" className="text-[10px] text-muted-foreground border-border">{prompt.niche}</Badge>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 ml-3">
                     {prompt.isFavorite && <Heart className="h-4 w-4 text-rose-500 fill-rose-500" />}
-                    <span className="text-xs text-gray-400">{new Date(prompt.createdAt).toLocaleDateString()}</span>
+                    <span className="text-xs text-muted-foreground">{new Date(prompt.createdAt).toLocaleDateString()}</span>
                   </div>
                 </div>
               ))}

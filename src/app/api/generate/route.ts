@@ -48,6 +48,13 @@ CRITICAL RULES:
       garmentRule = "MANDATORY: Use DARK colors for typography and main elements. The design will be printed on a WHITE/LIGHT garment, so high contrast is essential. Avoid white texts.";
     }
 
+    const negativePrompts = [
+      "mockup", "3D render", "physical product", "clothing", "garment", 
+      "person", "background scenery", "color palette legend", "color names",
+      "color swatches", "text boxes", "repeated text", "duplicate words", "watermark"
+    ];
+    const negativeString = negativePrompts.join(", ");
+
     const userPrompt = `Enhance and improve this print-on-demand prompt for ${aiTool}. The current prompt is:
 
 "${currentPrompt}"
@@ -59,13 +66,22 @@ Product context: ${config.productContext}
 Background spec: ${config.backgroundSpec}
 Quality markers: ${config.qualityMarkers}
 Fonts specified: Primary "${fonts.principal}", Secondary "${fonts.secundaria}", Accent "${fonts.acento}"
-Color palette: ${colors.join(', ')}
+Colors using: ${colors.join(', ')}
 ${garmentRule}
 
-IMPORTANT: Improve this prompt ensuring it describes a FLAT 2D PRINT FILE ARTWORK, NOT a 3D product render or mockup. Ensure all text references are in ENGLISH. 
-MANDATORY: You must include the aspect ratio constraint (e.g. REQUIRED ASPECT RATIO: ${config.aspectRatio}) in the text, and YOU MUST end the entire prompt with the exact string: --ar ${config.aspectRatio}
+IMPORTANT STRUCTURAL RULES:
+1. Describe a FLAT 2D PRINT FILE ARTWORK, NOT a 3D product render or mockup.
+2. All text MUST be in ENGLISH. Each text string MUST appear exactly once (do not repeat words).
+3. Do NOT include phrases like "color palette" or "swatches" in the positive text. Use "colors using...".
+4. You MUST include the aspect ratio constraint (e.g. REQUIRED ASPECT RATIO: ${config.aspectRatio}).
 
-Return ONLY the enhanced prompt.`;
+NEGATIVE PROMPT HANDLING:
+You MUST append the following negative constraints at the very end of your response exactly as formatted below, depending on the tool (${aiTool}):
+- If Midjourney: append " --no ${negativeString} --ar ${config.aspectRatio}"
+- If Stable Diffusion or Nano Banana: append " NEGATIVE PROMPT: ${negativeString}"
+- If DALL-E, ChatGPT Images, or others: append ". EXPLICIT NEGATIVE PROMPT (DO NOT INCLUDE): ${negativeString}."
+
+Return ONLY the final enhanced prompt.`;
 
     if (aiEngine === 'gemini') {
       if (!process.env.GEMINI_API_KEY) {
@@ -117,20 +133,7 @@ CRITICAL RULES:
         },
         {
           role: 'user',
-          content: `Enhance and improve this print-on-demand prompt for ${aiTool}. The current prompt is:
-
-"${currentPrompt}"
-
-Context: This is for a ${product} design, "${niche}" niche (${nicheTheme}), ${style} style.
-Font aesthetic: ${fontAesthetic}
-Illustration approach: ${illustrationApproach}
-Product context: ${config.productContext}
-Background spec: ${config.backgroundSpec}
-Quality markers: ${config.qualityMarkers}
-Fonts specified: Primary "${fonts.principal}", Secondary "${fonts.secundaria}", Accent "${fonts.acento}"
-Color palette: ${colors.join(', ')}
-
-IMPORTANT: Improve this prompt ensuring it describes a FLAT 2D PRINT FILE ARTWORK, NOT a 3D product render or mockup. The prompt must never cause an AI image generator to draw the physical product — only the flat design to be applied to it. Ensure all text references are in ENGLISH, typography specs are clear, every character of text is fully visible, and print quality markers are included. Return ONLY the enhanced prompt.`,
+          content: userPrompt,
         },
       ],
     });

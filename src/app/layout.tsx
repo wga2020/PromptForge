@@ -37,6 +37,7 @@ export const metadata: Metadata = {
 
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getLocale } from 'next-intl/server';
+import { ThemeProvider } from "@/components/theme-provider";
 
 export default async function RootLayout({
   children,
@@ -49,13 +50,20 @@ export default async function RootLayout({
   return (
     <html lang={locale} suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground transition-colors duration-300`}
         suppressHydrationWarning
       >
-        <NextIntlClientProvider messages={messages} locale={locale}>
-          {children}
-        </NextIntlClientProvider>
-        <Toaster />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <NextIntlClientProvider messages={messages} locale={locale}>
+            {children}
+          </NextIntlClientProvider>
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -413,10 +413,12 @@ export const COLOR_PALETTES: Record<string, string[]> = Object.fromEntries(
 export const AI_TOOLS = [
   "Midjourney",
   "DALL-E",
+  "ChatGPT Images",
   "Leonardo AI",
   "Ideogram",
   "Stable Diffusion",
   "Flux",
+  "Nano Banana",
 ];
 
 // ============================================================
@@ -606,137 +608,137 @@ export const PRODUCT_PROMPT_CONFIG: Record<string, {
   aspectRatio: string;
 }> = {
   "T-Shirt": {
-    productContext: "T-shirt print design, crisp edges, sticker-style silhouette",
+    productContext: "Vertical flat 2D graphic print design, crisp edges, sticker-style silhouette",
     backgroundSpec: "isolated on a solid flat {chromaColor} background for easy background removal in Photoshop, no background scenery, no shadows touching the edges, clean silhouette separation. MANDATORY: The design MUST have a solid WHITE BORDER/OUTLINE (#FFFFFF) around all elements to ensure perfect edge separation from the chroma background.",
     compositionSpec: "Centered composition",
     typographySpec: "Bold typography with short impactful text, slogan or phrase in ENGLISH related to the theme, integrated naturally into the composition",
-    qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 4500x5400px, 300 DPI, print-ready for DTG and screen printing",
+    qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 4500x5400px, 300 DPI, print-ready",
     chromaColor: "chroma green",
     aspectRatio: "3:4",
   },
   "Hoodie": {
-    productContext: "Hoodie print design, bold oversized graphic, statement piece with crisp edges, sticker-style silhouette",
+    productContext: "Vertical oversized flat 2D graphic print design, statement piece with crisp edges, sticker-style silhouette",
     backgroundSpec: "isolated on a solid flat {chromaColor} background for easy background removal in Photoshop, no background scenery, no shadows touching the edges, clean silhouette separation. MANDATORY: The design MUST have a solid WHITE BORDER/OUTLINE (#FFFFFF) around all elements to ensure perfect edge separation from the chroma background.",
     compositionSpec: "Large centered composition, impactful at distance",
     typographySpec: "Bold oversized typography with short impactful text, slogan or phrase in ENGLISH related to the theme, integrated naturally into the composition, readable from 2 meters away",
-    qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 4500x5400px, 300 DPI, print-ready for DTG and DTF printing on fleece fabric",
+    qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 4500x5400px, 300 DPI, print-ready",
     chromaColor: "chroma green",
     aspectRatio: "3:4",
   },
   "Mug/Taza": {
-    productContext: "FLAT 2D print-ready artwork for mug sublimation. This is NOT a product photo or mockup. This is a FLAT DESIGN FILE that will be digitally printed onto a mug surface. Generate the 2D artwork only, as if it were a flat rectangle of paper.",
-    backgroundSpec: "CRITICAL: isolated on a solid flat white background (#FFFFFF). NO mug, NO cup, NO ceramic object, NO 3D rendering, NO product photography, NO mockup, NO shadows of a product. This is a FLAT PRINT FILE ONLY. Clean white background, the artwork floats flat on it.",
-    compositionSpec: "Horizontal composition, wider than tall (landscape orientation), centered artwork optimized for the front panel of a 11oz mug wrap. Keep all critical elements within the center 60% width zone.",
-    typographySpec: "Clear bold legible typography with short impactful text in ENGLISH related to the theme, comfortably sized for reading at arm's length on a mug",
-    qualityMarkers: "Ultra detailed, 4K, professional flat graphic design for sublimation printing, 2700x1520px, 300 DPI, sublimation-print-ready for ceramic mug, NO 3D PRODUCT RENDERING",
+    productContext: "Horizontal panoramic flat 2D graphic print design, wide format",
+    backgroundSpec: "CRITICAL: isolated on a solid flat white background (#FFFFFF). NO 3D rendering, NO photography, NO shadows. This is a FLAT PRINT FILE ONLY. Clean white background, the artwork floats flat on it.",
+    compositionSpec: "Horizontal composition, wider than tall (landscape orientation), centered artwork. Keep all critical elements within the center 60% width zone.",
+    typographySpec: "Clear bold legible typography with short impactful text in ENGLISH related to the theme, comfortably sized for reading",
+    qualityMarkers: "Ultra detailed, 4K, professional flat graphic design, 2700x1520px, 300 DPI, print-ready, NO 3D PRODUCT RENDERING",
     chromaColor: "solid white",
     aspectRatio: "16:9",
   },
   "Poster/Lámina": {
-    productContext: "Poster wall art print design, gallery-quality fine art presentation, decorative statement piece",
+    productContext: "Vertical flat 2D art print design, gallery-quality fine art presentation, decorative statement piece",
     backgroundSpec: "full artistic background with intentional design elements, coherent visual environment supporting the theme, no isolation needed as this is a finished artwork",
     compositionSpec: "Balanced full-frame composition with clear visual hierarchy, impactful from 2+ meters distance",
     typographySpec: "Artistic typography with text, quote or phrase in ENGLISH related to the theme, integrated as a design element within the composition, elegant kerning and layout",
-    qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 6000x8000px, 300 DPI, gallery-quality giclée print-ready, museum-grade aesthetic",
+    qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 6000x8000px, 300 DPI, gallery-quality, museum-grade aesthetic",
     chromaColor: "full artistic background",
     aspectRatio: "3:4",
   },
   "Phone Case": {
-    productContext: "Phone case edge-to-edge print design, camera cutout compatible, slim profile aesthetic",
-    backgroundSpec: "full bleed design covering entire case surface, no isolation needed as design wraps the product, camera area kept clear of critical text elements",
-    compositionSpec: "Full-bleed vertical composition with camera cutout zone consideration, key elements in lower two-thirds",
-    typographySpec: "Concise bold typography with short text or word in ENGLISH related to the theme, minimal text for small format, ultra-legible at phone-size viewing",
-    qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 2400x4000px, 300 DPI, print-ready for case wrapping and UV printing",
+    productContext: "Vertical slim flat 2D graphic print design, edge-to-edge bleed, optimized for 9:16 aspect ratio format",
+    backgroundSpec: "full bleed flat design covering entire canvas, no isolation needed, area kept clear of critical text elements at top left",
+    compositionSpec: "Full-bleed vertical composition, key elements in lower two-thirds",
+    typographySpec: "Concise bold typography with short text or word in ENGLISH related to the theme, minimal text for small format, ultra-legible",
+    qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 2400x4000px, 300 DPI, print-ready",
     chromaColor: "full bleed background",
     aspectRatio: "9:16",
   },
   "Tote Bag": {
-    productContext: "Tote bag canvas print design, natural fabric texture compatible, eco-friendly aesthetic",
-    backgroundSpec: "isolated on a solid flat {chromaColor} background for easy background removal, no background scenery, clean edges for fabric printing on cotton canvas. MANDATORY: The design MUST have a solid WHITE BORDER/OUTLINE (#FFFFFF) around all elements to ensure perfect edge separation from the chroma background.",
-    compositionSpec: "Centered composition, bold and visible from distance, consider fabric absorption",
-    typographySpec: "Bold typography with short impactful text, slogan or phrase in ENGLISH related to the theme, thick strokes for canvas printing clarity, integrated naturally into the composition",
-    qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 3600x4200px, 300 DPI, print-ready for screen printing and DTG on cotton canvas",
+    productContext: "Vertical flat 2D graphic print design, eco-friendly aesthetic, bold central graphic",
+    backgroundSpec: "isolated on a solid flat {chromaColor} background for easy background removal, no background scenery, clean edges. MANDATORY: The design MUST have a solid WHITE BORDER/OUTLINE (#FFFFFF) around all elements to ensure perfect edge separation from the chroma background.",
+    compositionSpec: "Centered composition, bold and visible from distance",
+    typographySpec: "Bold typography with short impactful text, slogan or phrase in ENGLISH related to the theme, thick strokes for clarity, integrated naturally into the composition",
+    qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 3600x4200px, 300 DPI, print-ready",
     chromaColor: "chroma magenta",
     aspectRatio: "4:5",
   },
   "Sticker": {
-    productContext: "Die-cut sticker design, thick bold outlines for clean cutting path, vinyl decal aesthetic",
+    productContext: "Flat 2D die-cut sticker graphic design, thick bold outlines for clean cutting path, decal aesthetic",
     backgroundSpec: "isolated on a solid flat {chromaColor} background for easy background removal, clean die-cut edge definition, no fuzzy edges, crisp silhouette. MANDATORY: The design MUST have a solid thick WHITE BORDER/OUTLINE (#FFFFFF) around the entire silhouette to act as a die-cut line and buffer against the chroma background.",
     compositionSpec: "Compact centered composition, bold simple shapes, maximum impact at small size",
     typographySpec: "Extra bold condensed typography with short text or word in ENGLISH, 1-3 words maximum, ultra-thick strokes for small-format legibility, high contrast against design",
-    qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 3000x3000px, 300 DPI, print-ready for vinyl die-cut sticker production with kiss-cut edges",
+    qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 3000x3000px, 300 DPI, print-ready",
     chromaColor: "chroma green",
     aspectRatio: "1:1",
   },
   "Notebook/Agenda": {
-    productContext: "Notebook cover design, premium stationery aesthetic, spine-safe layout",
-    backgroundSpec: "full cover design with intentional background, elegant presentation suitable for product photography, no isolation needed",
-    compositionSpec: "Centered composition with spine margin consideration, elegant balanced layout",
+    productContext: "Vertical flat 2D book cover graphic design, premium stationery aesthetic",
+    backgroundSpec: "full flat design with intentional background, elegant presentation, no isolation needed",
+    compositionSpec: "Centered composition, elegant balanced layout",
     typographySpec: "Elegant typography with title or phrase in ENGLISH related to the theme, sophisticated lettering that conveys quality and craftsmanship, integrated as a key design element",
-    qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 2400x3200px, 300 DPI, print-ready for hardcover and softcover binding with lamination",
+    qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 2400x3200px, 300 DPI, print-ready",
     chromaColor: "full cover background",
     aspectRatio: "2:3",
   },
   "Cap/Gorra": {
-    productContext: "Cap front panel embroidery/print design, structured crown compatible, bold simple shapes for thread rendering",
-    backgroundSpec: "isolated on a solid flat {chromaColor} background for easy background removal, no background scenery, clean silhouette for embroidery digitizing. MANDATORY: The design MUST have a solid WHITE BORDER/OUTLINE (#FFFFFF) around all elements to ensure perfect edge separation from the chroma background.",
-    compositionSpec: "Compact centered composition within front panel area, simplified for embroidery thread limitation",
-    typographySpec: "Bold block typography with short text in ENGLISH, 1-3 words maximum, thick block letters suitable for embroidery digitizing, no thin serifs or delicate scripts",
-    qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 2800x1800px, 300 DPI, embroidery-friendly with minimum 0.5mm stroke width, print-ready for front panel application",
+    productContext: "Horizontal flat 2D patch graphic design, bold simple shapes",
+    backgroundSpec: "isolated on a solid flat {chromaColor} background for easy background removal, no background scenery, clean silhouette. MANDATORY: The design MUST have a solid WHITE BORDER/OUTLINE (#FFFFFF) around all elements to ensure perfect edge separation from the chroma background.",
+    compositionSpec: "Compact centered horizontal composition, simplified shapes",
+    typographySpec: "Bold block typography with short text in ENGLISH, 1-3 words maximum, thick block letters, no thin serifs or delicate scripts",
+    qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 2800x1800px, 300 DPI, print-ready",
     chromaColor: "chroma green",
     aspectRatio: "3:2",
   },
   "Cushion/Cojín": {
-    productContext: "Decorative cushion cover design, soft home decor aesthetic, front face print area",
-    backgroundSpec: "full face design with intentional background, cozy and inviting presentation, no isolation needed as this is a finished home decor product",
-    compositionSpec: "Centered square composition, harmonious with interior decor context",
-    typographySpec: "Decorative typography with text or phrase in ENGLISH related to the theme, warm and inviting lettering style that complements home aesthetics",
-    qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 3600x3600px, 300 DPI, print-ready for sublimation on polyester cushion cover",
+    productContext: "Square flat 2D graphic print design, soft aesthetic, seamless edge-to-edge layout",
+    backgroundSpec: "full flat design with intentional background, inviting presentation, no isolation needed",
+    compositionSpec: "Centered square composition, harmonious context",
+    typographySpec: "Decorative typography with text or phrase in ENGLISH related to the theme, warm and inviting lettering style",
+    qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 3600x3600px, 300 DPI, print-ready",
     chromaColor: "full decorative background",
     aspectRatio: "1:1",
   },
   "Blanket/Manta": {
-    productContext: "Blanket all-over print design, cozy warm aesthetic, large-format textile application",
-    backgroundSpec: "full coverage design with seamless or intentionally bordered layout, warm inviting atmosphere, no isolation needed as design covers entire blanket surface",
-    compositionSpec: "Large all-over centered composition, visually cohesive at blanket scale, soft edges preferred over hard cuts",
-    typographySpec: "Large comfortable typography with text or phrase in ENGLISH related to the theme, warm inviting lettering, readable at distance with soft fabric consideration",
-    qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 5400x7200px, 300 DPI, print-ready for sublimation on fleece and woven blanket materials",
+    productContext: "Vertical large-format flat 2D graphic print design, cozy aesthetic, full bleed",
+    backgroundSpec: "full coverage flat design with seamless or intentionally bordered layout, warm inviting atmosphere, no isolation needed",
+    compositionSpec: "Large all-over centered composition, visually cohesive at scale, soft edges preferred over hard cuts",
+    typographySpec: "Large comfortable typography with text or phrase in ENGLISH related to the theme, warm inviting lettering, readable at distance",
+    qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 5400x7200px, 300 DPI, print-ready",
     chromaColor: "full coverage background",
     aspectRatio: "4:5",
   },
   "Pin/Badge": {
-    productContext: "Enamel pin design, hard enamel or soft enamel style, metal border outline, compact circular format",
-    backgroundSpec: "isolated on a solid flat {chromaColor} background for easy background removal, clean metal border definition, no fuzzy edges, bold solid color fills. MANDATORY: The design MUST have a solid WHITE BORDER/OUTLINE (#FFFFFF) around all elements to ensure perfect edge separation from the chroma background.",
-    compositionSpec: "Compact centered circular composition, extremely simplified for 1-2 inch physical size, maximum 2-3 colors for enamel production",
-    typographySpec: "Ultra bold condensed typography with 1-2 words maximum in ENGLISH, block letters with thick strokes, minimum 3mm character height for physical pin legibility, no scripts or serifs",
-    qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 1000x1000px, 300 DPI, enamel pin production-ready with metal plating lines and color separations",
+    productContext: "Compact circular flat 2D graphic design, hard enamel style, metal border outline",
+    backgroundSpec: "isolated on a solid flat {chromaColor} background for easy background removal, clean border definition, no fuzzy edges, bold solid color fills. MANDATORY: The design MUST have a solid WHITE BORDER/OUTLINE (#FFFFFF) around all elements to ensure perfect edge separation from the chroma background.",
+    compositionSpec: "Compact centered circular composition, extremely simplified, maximum 2-3 colors",
+    typographySpec: "Ultra bold condensed typography with 1-2 words maximum in ENGLISH, block letters with thick strokes, no scripts or serifs",
+    qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 1000x1000px, 300 DPI, print-ready",
     chromaColor: "chroma green",
     aspectRatio: "1:1",
   },
   "Card/Invitación": {
-    productContext: "Premium invitation card design, fine stationery aesthetic, elegant presentation",
-    backgroundSpec: "full card design with sophisticated background, luxury stationery context, decorative borders and ornamental framing encouraged, no isolation needed",
+    productContext: "Vertical flat 2D premium card graphic design, fine stationery aesthetic",
+    backgroundSpec: "full flat design with sophisticated background, decorative borders and ornamental framing encouraged, no isolation needed",
     compositionSpec: "Elegant portrait composition with decorative framing, formal balanced layout with hierarchical text placement",
     typographySpec: "Elegant refined typography with formal text in ENGLISH, calligraphic script for names paired with classic serif for details, sophisticated kerning and leading, luxury stationery lettering quality",
-    qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 2400x3600px, 300 DPI, letterpress and foil-ready, print-ready on premium cardstock with envelope",
+    qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 2400x3600px, 300 DPI, print-ready",
     chromaColor: "full elegant background",
     aspectRatio: "3:4",
   },
   "Mousepad": {
-    productContext: "Mousepad full surface design, desk accessory aesthetic, functional workspace enhancement",
-    backgroundSpec: "full bleed design covering entire mousepad surface, no isolation needed, design extends to all edges for rubber base wrapping",
-    compositionSpec: "Full-surface horizontal composition with central focal point, consider wrist rest area and mouse movement zone, avoid critical details at extreme edges",
-    typographySpec: "Moderate typography with text in ENGLISH related to the theme, balanced against illustrative elements, legible while using the mouse on the pad surface",
-    qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 3600x2700px, 300 DPI, print-ready for sublimation on fabric-top rubber-base mousepad",
+    productContext: "Horizontal wide flat 2D graphic print design, full surface desk aesthetic",
+    backgroundSpec: "full bleed flat design covering entire canvas, no isolation needed",
+    compositionSpec: "Full-surface horizontal composition with central focal point, avoid critical details at extreme edges",
+    typographySpec: "Moderate typography with text in ENGLISH related to the theme, balanced against illustrative elements",
+    qualityMarkers: "Ultra detailed, 4K, professional graphic design, trending on Behance, 3600x2700px, 300 DPI, print-ready",
     chromaColor: "full bleed background",
     aspectRatio: "4:3",
   },
   "Cover Ebook": {
-    productContext: "Ebook cover design, bestselling book cover aesthetic, visually stunning and captivating at thumbnail size, professional publishing quality",
-    backgroundSpec: "full cover design with immersive atmospheric background, cinematic depth of field, dramatic lighting and mood that captures the book's essence, rich layered environment that draws the viewer in, no isolation needed as this is a complete book cover artwork",
-    compositionSpec: "Portrait composition with clear visual hierarchy optimized for thumbnail visibility on Amazon Kindle, Apple Books and Kobo, title positioned in the upper third for maximum impact, author name in the lower third, focal point imagery in the center drawing the eye, strong contrast between text and background for legibility at small sizes",
-    typographySpec: "Bestselling book cover typography with bold captivating title in ENGLISH as the primary visual anchor, rendered in a style that conveys the genre and tone of the book, author name in clean complementary font at the bottom, tagline or subtitle in smaller supporting text, all text perfectly legible at thumbnail size (120px wide), with dramatic text effects such as emboss, glow, shadow or metallic finish to enhance visual impact and create a premium feel",
-    qualityMarkers: "Ultra detailed, 4K, professional book cover design, trending on Behance and BookCoverArchive, 2500x4000px, 300 DPI, Amazon KDP compliant, print-ready for paperback and hardcover wrap, optimized for digital storefront thumbnail display, award-winning book cover aesthetic",
+    productContext: "Vertical flat 2D digital book cover graphic design, visually stunning and captivating at thumbnail size",
+    backgroundSpec: "full flat design with immersive atmospheric background, cinematic depth of field, dramatic lighting and mood that captures the book's essence, no isolation needed",
+    compositionSpec: "Portrait composition with clear visual hierarchy optimized for thumbnail visibility, title positioned in the upper third for maximum impact, author name in the lower third, focal point imagery in the center drawing the eye, strong contrast between text and background for legibility at small sizes",
+    typographySpec: "Bestselling book cover typography with bold captivating title in ENGLISH as the primary visual anchor, rendered in a style that conveys the genre and tone of the book, author name in clean complementary font at the bottom, tagline or subtitle in smaller supporting text, all text perfectly legible at thumbnail size (120px wide)",
+    qualityMarkers: "Ultra detailed, 4K, professional flat design, trending on Behance and BookCoverArchive, 2500x4000px, 300 DPI, print-ready",
     chromaColor: "full cinematic background",
     aspectRatio: "2:3",
   },
@@ -1112,10 +1114,10 @@ export function generatePromptText(data: {
   if (data.accentText) {
     textContent += `. Accent detail written out: "${data.accentText}"`;
   }
-  textContent += `. No template text`;
+  textContent += `. No template text. MANDATORY RULE: Each text string must appear exactly once in the design. Do not repeat words.`;
 
   // Build the color palette section
-  const colorSection = `Rich and vibrant color palette based on ${data.paletteName} (${colorStr}) with smooth gradients, depth and dimension`;
+  const colorSection = `Rich and vibrant colors using ${data.paletteName} (${colorStr}) with smooth gradients, depth and dimension. DO NOT include any color palette legend, text boxes with color names, or swatches.`;
 
   // Build the objects section
   let objectsSection = "";
@@ -1132,9 +1134,17 @@ export function generatePromptText(data: {
     contrastSection = "MANDATORY: Use DARK colors for typography and main elements. The design will be printed on a WHITE/LIGHT garment, so high contrast is essential. Avoid white texts.";
   }
 
-  // Assemble the full master prompt
-  const prompt = [
-    `CRITICAL MANDATORY RULE: You must generate ONLY the flat 2D artwork itself. DO NOT generate a mockup. DO NOT draw the physical product, clothing, or garment. DO NOT include any 3D product renders, people wearing the product, or physical context. This is a flat graphic design file.`,
+  // SURGICAL CORRECTION: Structural separation of negative constraints
+  const negativePrompts = [
+    "mockup", "3D render", "physical product", "clothing", "garment", 
+    "person", "background scenery", "color palette legend", "color names",
+    "color swatches", "text boxes", "repeated text", "duplicate words", "watermark"
+  ];
+  const negativeString = negativePrompts.join(", ");
+
+  // Assemble the positive master prompt
+  const promptParts = [
+    `CRITICAL INSTRUCTION: Generate ONLY the flat 2D artwork itself.`,
     `Vector illustration with hyperrealistic detail, ${data.niche} theme featuring ${nicheTheme}.`,
     objectsSection,
     illustrationApproach,
@@ -1146,10 +1156,20 @@ export function generatePromptText(data: {
     `${config.compositionSpec}, ${config.productContext}. REQUIRED ASPECT RATIO: ${config.aspectRatio}.`,
     backgroundSpec,
     config.qualityMarkers,
-  ].join(" ");
+  ];
 
-  // Append Midjourney/Standard aspect ratio flag
-  return `${prompt} --ar ${config.aspectRatio}`;
+  const prompt = promptParts.filter(Boolean).join(" ");
+
+  // Append engine-specific syntax for negative prompts and aspect ratio
+  const toolName = (data.aiTool || '').toLowerCase();
+  if (toolName.includes('midjourney')) {
+    return `${prompt} --no ${negativeString} --ar ${config.aspectRatio}`;
+  } else if (toolName.includes('stable diffusion') || toolName.includes('nano banana')) {
+    return `${prompt} NEGATIVE PROMPT: ${negativeString}`;
+  } else {
+    // Fallback for DALL-E, ChatGPT Images, Ideogram, Flux
+    return `${prompt}. EXPLICIT NEGATIVE PROMPT (DO NOT INCLUDE): ${negativeString}.`;
+  }
 }
 
 // ============================================================
